@@ -1,0 +1,15 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.VC.db
+*.VC.opendb
+
+# Папки сборки
+build/
+bin/
+Debug/
+Release/
+
+# Другие временные файлы
+*.log
