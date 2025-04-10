@@ -1,4 +1,4 @@
-# Visual Studio
+# Visual Studio временные файлы
 .vs/
 *.user
 *.suo
@@ -10,6 +10,39 @@ build/
 bin/
 Debug/
 Release/
+x64/
+x86/
+
+# Логи и временные файлы
+*.log
+*.tlog
+*.tmp
+
+# NuGet пакеты
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+
+# Node.js модули
+node_modules/
+
+# Файлы настройки
+*.sln.docstates
+*.rsp
+!Directory.Build.rsp
+
+# MSTest результаты
+[Tt]est[Rr]esult*/
+*.coverage
+*.coveragexml
 
 # Другие временные файлы
-*.log
+*.cachefile
+*.pidb
+*.aps
+*.tmp_proj
+*.publishproj
+.history/
+.mfractor/
+.localhistory/
+.vshistory/
