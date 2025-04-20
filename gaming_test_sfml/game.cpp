@@ -8,17 +8,20 @@ Game::Game() :
 {
 	mPlayer.setPosition(sf::Vector2f(400.f, 300.f));
 
-	if (!mBackgroundTexture.loadFromFile("assets/images/background.png")) {
-		std::cerr << "Import error background!" << std::endl;
-	}
-	mBackgroundSprite.setTexture(mBackgroundTexture);
-	
-	//Масштабируем фон под размеры окнаж
-	sf::Vector2u textureSize = mBackgroundTexture.getSize();
-	sf::Vector2u windowSize = mWindow.getSize();
-	mBackgroundSprite.setScale(
-		static_cast<float>(windowSize.x) / textureSize.x,
-		static_cast<float>(windowSize.y) / textureSize.y);
+	const sf::Vector2u tileSize(80, 60);
+	if (!mMap.load("assets/images/location.png", tileSize, level, W, H, collisionMask))
+		throw std::runtime_error("cant load map");
+	//if (!mBackgroundTexture.loadFromFile("assets/images/background.png")) {
+	//	std::cerr << "Import error background!" << std::endl;
+	//}
+	//mBackgroundSprite.setTexture(mBackgroundTexture);
+	//
+	////Масштабируем фон под размеры окнаж
+	//sf::Vector2u textureSize = mBackgroundTexture.getSize();
+	//sf::Vector2u windowSize = mWindow.getSize();
+	//mBackgroundSprite.setScale(
+	//	static_cast<float>(windowSize.x) / textureSize.x,
+	//	static_cast<float>(windowSize.y) / textureSize.y);
 }
 
 void Game::run()
@@ -61,16 +64,36 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 	mPlayer.handleInput(key, isPressed);
 }
 
-void Game::update(sf::Time deltaTime)
+void Game::update(sf::Time dt)
 {
-	mPlayer.update(deltaTime);
+	// 1. Расчёт желаемого движения
+	sf::Vector2f desired = mPlayer.computeMovement(dt);
+	// 2. Проверка проходимости
+	sf::FloatRect nextBox = mPlayer.getBounds();
+	nextBox.left += desired.x;
+	nextBox.top += desired.y;
+
+	auto ts = mMap.getTileSize();
+	auto check = [&](float x, float y) {
+		int tx = int(x) / ts.x;
+		int ty = int(y) / ts.y;
+		return mMap.isWalkable(tx, ty);
+	};
+
+	bool pass = check(nextBox.left, nextBox.top)
+		&& check(nextBox.left + nextBox.width - 1, nextBox.top)
+		&& check(nextBox.left, nextBox.top + nextBox.height - 1)
+		&& check(nextBox.left + nextBox.width - 1, nextBox.top + nextBox.height - 1);
+
+	if (pass)
+		mPlayer.move(desired);
 }
 
 void Game::render()
 {
 	// очищаем окно черным цветом, отрисовываем игрока и отображаем результат
 	mWindow.clear(sf::Color::Black);
-	mWindow.draw(mBackgroundSprite);
+	mWindow.draw(mMap);
 	mPlayer.render(mWindow);
 	mIncidentManager.render(mWindow);
 	mWindow.display();

@@ -78,6 +78,26 @@ Vector2f Player::getPosition() const
 	return mSprite.getPosition();
 }
 
+sf::Vector2f Player::computeMovement(sf::Time deltaTime)
+{
+	sf::Vector2f movement(0.f, 0.f);
+	if (mIsMovingUp) movement.y -= mSpeed;
+	if (mIsMovingDown) movement.y += mSpeed;
+	if (mIsMovingLeft) movement.x -= mSpeed;
+	if (mIsMovingRight) movement.x += mSpeed;
+	return movement* deltaTime.asSeconds();
+}
+
+void Player::move(const sf::Vector2f& movement)
+{
+	mSprite.move(movement);
+}
+
+sf::FloatRect Player::getBounds() const
+{
+	return mSprite.getGlobalBounds();
+}
+
 void Player::updateAnimation(sf::Time deltaTime)
 {
 	mElapsedTime += deltaTime;

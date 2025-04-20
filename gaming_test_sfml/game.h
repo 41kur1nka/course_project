@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "IncidentManager.h"
 #include "Player.h"
+#include "TileMap.h"
 class Game {
 public:
 	Game();
@@ -19,4 +20,5 @@ private:
 
 	sf::Texture mBackgroundTexture;
 	sf::Sprite mBackgroundSprite;
+	TileMap mMap;
 };

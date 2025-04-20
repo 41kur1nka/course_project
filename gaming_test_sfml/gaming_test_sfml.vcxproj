@@ -147,6 +147,7 @@ sfml-system.lib
     <ClCompile Include="IncidentManager.cpp" />
     <ClCompile Include="ParkingViolation.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="TileMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />
@@ -154,6 +155,7 @@ sfml-system.lib
     <ClInclude Include="IncidentManager.h" />
     <ClInclude Include="ParkingViolation.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="TileMap.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

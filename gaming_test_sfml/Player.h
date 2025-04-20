@@ -14,6 +14,10 @@ public:
 	void setPosition(const Vector2f& position);
 	Vector2f getPosition() const;
 
+	sf::Vector2f computeMovement(sf::Time deltaTime);
+	void move(const sf::Vector2f& movement);
+	sf::FloatRect getBounds() const;
+
 private:
 	Sprite mSprite;
 	Texture mRightTexture;
