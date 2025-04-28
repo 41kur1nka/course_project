@@ -2,7 +2,10 @@
 #include <SFML/Graphics.hpp>
 #include "IncidentManager.h"
 #include "Player.h"
-#include "TileMap.h"
+#include <nlohmann/json.hpp>
+#include <vector>
+#include <string>
+using json = nlohmann::json;
 class Game {
 public:
 	Game();
@@ -17,8 +20,23 @@ private:
 	bool mIsMovingUp, mIsMovingDown, mIsMovingLeft, mIsMovingRight;
 	Player mPlayer;
 	IncidentManager mIncidentManager;
+	
+	// JSON-карта
+	/*bool loadMapJSON(const std::string & path);*/
 
-	sf::Texture mBackgroundTexture;
-	sf::Sprite mBackgroundSprite;
-	TileMap mMap;
+	// тайловый атлас и фон
+	sf::Texture     mTilesetTexture;
+	sf::VertexArray mBaseVertices;   // VertexArray для слоя "Base"
+	sf::VertexArray mObstacleVertices;
+
+	// размеры
+	sf::Vector2u    mTileSize;       // (tilewidth, tileheight)
+	sf::Vector2u    mMapSize;        // (width, height) в тайлах
+
+	// коллизии: 1 = стена, 0 = проход
+	std::vector<int> mCollisionMask;
+
+	// необработанные JSON-слои объектов (objectgroup)
+	std::vector<json> mObjectLayers;
+
 };

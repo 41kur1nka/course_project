@@ -1,19 +1,19 @@
 #include "Player.h"
 #include <iostream>
-Player::Player() :mSpeed(300.f),
+Player::Player() :mSpeed(140.f),
 mIsMovingUp(false),
 mIsMovingDown(false),
 mIsMovingLeft(false),
 mIsMovingRight(false),
-mFramecount(4),
+mFramecount(12),
 mCurrentFrame(0),
 mFrameDuration(sf::seconds(0.15f)),
 mElapsedTime(sf::Time::Zero)
 {
-	if (!mRightTexture.loadFromFile("assets/images/player_spritesheet_right.png")) {
+	if (!mRightTexture.loadFromFile("assets/images/right_walk.png")) {
 		std::cout << "Error to load spritesheet" << std::endl;
 	}
-	if (!mLeftTexture.loadFromFile("assets/images/player_spritesheet_left.png")) {
+	if (!mLeftTexture.loadFromFile("assets/images/left_walk.png")) {
 		std::cout << "Error to load spritesheet" << std::endl;
 	}
 	mSprite.setTexture(mRightTexture);
@@ -34,7 +34,7 @@ void Player::update(Time deltaTime)
 {
 	updateDirection();
 
-	Vector2f movement(0.f, 0.f);
+	/*Vector2f movement(0.f, 0.f);
 	if (mIsMovingUp)
 		movement.y -= mSpeed;
 	if (mIsMovingDown)
@@ -44,7 +44,7 @@ void Player::update(Time deltaTime)
 	if (mIsMovingRight)
 		movement.x += mSpeed;
 
-	mSprite.move(movement * deltaTime.asSeconds());
+	mSprite.move(movement * deltaTime.asSeconds());*/
 
 	if (mIsMovingUp || mIsMovingDown || mIsMovingLeft || mIsMovingRight) {
 		updateAnimation(deltaTime);
