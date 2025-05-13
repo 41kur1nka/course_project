@@ -9,7 +9,7 @@ class Player {
 public:
 	Player();
 	void update(Time deltaTime);
-	void render(RenderWindow& window);
+	void render(RenderTarget& target) const;
 	void handleInput(Keyboard::Key key, bool isPressed);
 	void setPosition(const Vector2f& position);
 	Vector2f getPosition() const;

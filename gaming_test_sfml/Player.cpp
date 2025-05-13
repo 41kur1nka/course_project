@@ -51,9 +51,9 @@ void Player::update(Time deltaTime)
 	}
 }
 
-void Player::render(RenderWindow& window)
+void Player::render(RenderTarget& target) const
 {
-	window.draw(mSprite);
+	target.draw(mSprite);
 }
 
 void Player::handleInput(Keyboard::Key key, bool isPressed)

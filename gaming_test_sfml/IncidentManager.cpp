@@ -19,9 +19,9 @@ void IncidentManager::update(sf::Time deltaTime)
 	}
 }
 
-void IncidentManager::render(sf::RenderWindow& window)
+void IncidentManager::render(sf::RenderTarget& target) const
 {
-	for (const auto& incident : mIncidents) {
-		incident->render(window);
+	for (auto& incident : mIncidents) {
+		incident->render(target);
 	}
 }
