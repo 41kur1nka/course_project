@@ -8,7 +8,7 @@ public:
 	// Обновление логики инцидента
 	virtual void update(sf::Time deltaTime) = 0;
 	// Отрисовка инцидента на экране
-	virtual void render(sf::RenderWindow& window) = 0;
+	virtual void render(sf::RenderTarget& target) = 0;
 	// Метод для опредедения, завершён ли инцедент
 	virtual bool isCompleted() const = 0;
 };

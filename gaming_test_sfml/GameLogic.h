@@ -12,6 +12,10 @@ public:
     void update(sf::Time dt);
     void spawnIncident();
 
+    void togglePause();
+    bool isPaused() const;
+    void renderScene(sf::RenderWindow& window);
+
     Player& player() { return mPlayer; }
     IncidentManager& incidents() { return mIncidents; }
     Map& map() { return mMap; }
@@ -23,7 +27,11 @@ public:
         auto ts = mMap.getTileSize();
         return { ms.x * ts.x, ms.y * ts.y };
     }
-    
+    sf::IntRect getPlayableArea() const {
+        // Ќапример, захардкодить или вычислить по данным JSON-карты:
+        return sf::IntRect(0, 0,   // смещение
+            1280, 960); // ширина и высота области
+    }
 
 private:
     Map             mMap;
@@ -32,4 +40,6 @@ private:
 
     // флаги дл€ WASD
     bool mUp = false, mDown = false, mLeft = false, mRight = false, mIsPaused = false;
+
+    
 };

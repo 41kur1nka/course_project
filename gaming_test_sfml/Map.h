@@ -15,7 +15,6 @@ public:
 
     sf::Vector2u getTileSize() const { return mTileSize; }
     sf::Vector2u getMapSize() const { return mMapSize; }
-
 private:
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
@@ -26,4 +25,5 @@ private:
 
     sf::Vector2u    mTileSize;       // из JSON
     sf::Vector2u    mMapSize;        // из JSON
+
 };

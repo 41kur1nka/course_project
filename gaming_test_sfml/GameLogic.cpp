@@ -39,12 +39,6 @@ void GameLogic::update(sf::Time dt)
     // 1) Рассчитать желаемое смещение игрока
     sf::Vector2f desired = mPlayer.computeMovement(dt);
 
-    // Если направления заданы, нормализуем вектор
-    /*if (desired.x != 0.f || desired.y != 0.f) {
-        float len = std::sqrt(desired.x * desired.x + desired.y * desired.y);
-        desired /= len;
-    }*/
-
     // 2) Коллизии: проверяем четыре угла «коробки» игрока
     sf::FloatRect box = mPlayer.getBounds();
     sf::FloatRect next = box;
@@ -85,4 +79,22 @@ void GameLogic::spawnIncident()
     mIncidents.addIncident(
         std::make_unique<ParkingViolation>(sf::Vector2f{ x,y })
     );
+}
+
+void GameLogic::togglePause()
+{
+    mIsPaused = !mIsPaused;
+}
+
+bool GameLogic::isPaused() const
+{
+    return mIsPaused;
+}
+
+void GameLogic::renderScene(sf::RenderWindow& window)
+{
+    // отрисовка основных элементов сцены
+    window.draw(mMap);                  // карта
+    mIncidents.render(window);         // инциденты
+    mPlayer.render(window);            // игрок
 }

@@ -13,9 +13,9 @@ void ParkingViolation::update(sf::Time deltaTime)
 	mElapsedaTime += deltaTime;
 }
 
-void ParkingViolation::render(sf::RenderWindow& window)
+void ParkingViolation::render(sf::RenderTarget& target)
 {
-	window.draw(mShape);
+	target.draw(mShape);
 }
 
 bool ParkingViolation::isCompleted() const
