@@ -21,11 +21,11 @@ int main()
             while (window.pollEvent(e)) {
                 if (e.type == sf::Event::Closed)
                     window.close();
-                if (e.type == sf::Event::KeyPressed)
+                else if (e.type == sf::Event::KeyPressed)
                     logic.handleInput(e.key.code, true);
-                if (e.type == sf::Event::KeyReleased)
+                else if (e.type == sf::Event::KeyReleased)
                     logic.handleInput(e.key.code, false);
-                if (e.type == sf::Event::MouseButtonPressed &&
+                else if (e.type == sf::Event::MouseButtonPressed &&
                     e.mouseButton.button == sf::Mouse::Left &&
                     logic.isPaused())         // только в паузе кнопки активны
                 {

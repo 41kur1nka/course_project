@@ -1,8 +1,11 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Player.h"
-#include "IncidentManager.h"
 #include "Map.h"
+#include <vector>
+#include <memory>
+#include "ParkingViolation.h"
+#include "Incident.h"
 
 class GameLogic {
 public:
@@ -10,14 +13,14 @@ public:
 
     void handleInput(sf::Keyboard::Key key, bool isPressed);
     void update(sf::Time dt);
-    void spawnIncident();
-
-    void togglePause();
-    bool isPaused() const;
     void renderScene(sf::RenderWindow& window);
 
+    bool isPaused() const { return mPaused; }
+    bool isInteracting() const { return mInInteraction; }
+    void togglePause() { mPaused = !mPaused; }
+    sf::Vector2f getPlayerPosition() const { return mPlayer.getPosition(); }
+
     Player& player() { return mPlayer; }
-    IncidentManager& incidents() { return mIncidents; }
     Map& map() { return mMap; }
 
     sf::Vector2u getMapSize()      const { return mMap.getMapSize(); }
@@ -32,14 +35,21 @@ public:
         return sf::IntRect(0, 0,   // смещение
             1280, 960); // ширина и высота области
     }
+    void startInteraction();
+    void finishInteraction(bool ok);
 
 private:
+    
     Map             mMap;
     Player          mPlayer;
-    IncidentManager mIncidents;
 
-    // флаги для WASD
-    bool mUp = false, mDown = false, mLeft = false, mRight = false, mIsPaused = false;
+    std::vector<std::unique_ptr<Incident>> mIncidents;
+    ParkingViolation* mCurrentViolation = nullptr;
+    bool                mPaused = false;
+    bool                mInInteraction = false;
+    int                 mScore = 0;
 
-    
+    // текстуры для инцидентов
+    sf::Texture mCarTexture;
+    sf::Texture mQuestionSheetTexture;
 };

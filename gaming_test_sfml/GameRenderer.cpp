@@ -78,7 +78,16 @@ void GameRenderer::render()
 
     // 4) —брасываем вид дл€ UI/меню
     mWindow.setView(mWindow.getDefaultView());
-    if (mLogic.isPaused()) {
+    if (mLogic.isInteracting()) {
+        sf::RectangleShape bg(sf::Vector2f(mWindow.getSize()));
+        bg.setFillColor(sf::Color(0, 0, 0, 180));
+        mWindow.draw(bg);
+
+        sf::Text txt("Press E for stop crime", mFont, 24);
+        txt.setFillColor(sf::Color::White);
+        txt.setPosition(50, 50);
+        mWindow.draw(txt);
+    }else if (mLogic.isPaused()) {
         /*mWindow.draw(mPauseOverlay);
         mWindow.draw(mPauseText);*/
 
