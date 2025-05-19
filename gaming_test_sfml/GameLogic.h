@@ -6,6 +6,8 @@
 #include <memory>
 #include "ParkingViolation.h"
 #include "Incident.h"
+#include "string"
+#include <unordered_map>
 
 class GameLogic {
 public:
@@ -38,8 +40,13 @@ public:
     void startInteraction();
     void finishInteraction(bool ok);
 
+
+    // spawning cars
+    void setMaxIncidents(std::size_t max) { mMaxIncidents = max; }
+    bool spawnOne();
+
 private:
-    
+
     Map             mMap;
     Player          mPlayer;
 
@@ -52,4 +59,17 @@ private:
     // текстуры для инцидентов
     sf::Texture mCarTexture;
     sf::Texture mQuestionSheetTexture;
+
+    std::unordered_map<std::string, sf::Texture> mCarSideTextures;
+    std::unordered_map<std::string, sf::Texture> mCarFrontTextures;
+    sf::Texture                                  mQuestionTexture;
+
+    // Параметры спавна
+    std::size_t mMaxIncidents = 5;          // по умолчанию до 5
+    float       mSpawnInterval = 3.f;        // раз в 3 секунды
+    float       mTimeSinceLast = 0.f;        // накопление времени
+
+    // Вспомогательная
+    static std::string pickColor(const std::string& desired,
+        const std::unordered_map<std::string, sf::Texture>& dict);
 };

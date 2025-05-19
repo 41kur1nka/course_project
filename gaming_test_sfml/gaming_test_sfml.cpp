@@ -13,7 +13,6 @@ int main()
         sf::RenderWindow window(mode, "Beat Cops", sf::Style::Close);
 
         GameRenderer renderer(window, logic);
-                
         sf::Clock clock;
         while (window.isOpen()) {
             sf::Time deltaTime = clock.restart();

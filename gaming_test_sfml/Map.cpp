@@ -2,6 +2,10 @@
 #include <fstream>
 #include <iostream>
 #include <filesystem>
+#include <vector>
+#include <string>
+#include <nlohmann/json.hpp>
+#include <SFML/Graphics.hpp>
 
 static constexpr unsigned FLIPPED_H = 0x80000000;
 static constexpr unsigned FLIPPED_V = 0x40000000;
@@ -106,6 +110,43 @@ bool Map::loadFromJSON(const std::string& jsonPath)
             }
         }
     }
+
+
+    // 7) обработка spawnzones
+    for (auto& layer : j.at("layers")) {
+        if (layer.at("type").get<std::string>() != "objectgroup" ||
+            layer.at("name").get<std::string>() != "SpawnZones")
+            continue;
+
+        for (auto& obj : layer.at("objects")) {
+            // отфильтруем только прямоугольники
+            if (!obj.contains("width") || !obj.contains("height"))
+                continue;
+
+            SpawnZone sz;
+            sz.rect.left = obj.at("x").get<float>();
+            sz.rect.top = obj.at("y").get<float>();
+            sz.rect.width = obj.at("width").get<float>();
+            sz.rect.height = obj.at("height").get<float>();
+
+            // дефолты:
+            sz.orientation = "side";
+            sz.color = "red";
+
+            if (obj.contains("properties")) {
+                for (auto& prop : obj.at("properties")) {
+                    auto name = prop.at("name").get<std::string>();
+                    auto val = prop.at("value").get<std::string>();
+                    if (name == "orientation") sz.orientation = val;
+                    if (name == "color")       sz.color = val;
+                }
+            }
+            mSpawnZones.push_back(std::move(sz));
+        }
+        break;
+    } 
+    
+
     return true;
 }
 

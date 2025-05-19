@@ -18,6 +18,9 @@ public:
 
 	// вызываем из GameLogic при «решении» мини-игры
 	void resolve() { mResolved = true; }
+	sf::FloatRect getCarBounds() const {
+		return mCar.getGlobalBounds();
+	}
 
 private:
 	sf::Sprite mCar;

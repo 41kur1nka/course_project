@@ -15,6 +15,7 @@ public:
     sf::Vector2u getTileSize() const { return mTileSize; }
     sf::Vector2u getMapSize() const { return mMapSize; }
 
+
 private:
     struct Tileset {
         int               firstGid;
@@ -32,4 +33,15 @@ private:
     std::vector<sf::VertexArray> mBaseLayers;      // по одному VA на каждый tileset
     std::vector<sf::VertexArray> mObstacleLayers;  // по одному VA на каждый tileset
     std::vector<int>             mCollisionMask;   // 1=стена, 0=свободно
+
+    struct SpawnZone {
+        sf::FloatRect rect;       // { x, y, width, height }
+        std::string   orientation; // "side" или "front"
+        std::string   color;       // "red", "blue" и т.п.
+    };
+    std::vector<SpawnZone> mSpawnZones;
+
+public:
+    const std::vector<SpawnZone>& getSpawnZones() const { return mSpawnZones; };
+
 };
