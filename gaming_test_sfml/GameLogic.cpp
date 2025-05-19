@@ -6,7 +6,7 @@
 GameLogic::GameLogic()
 {
     // 1) Загрузить карту из JSON + тайлсета
-    if (!mMap.loadFromJSON("assets/images/map.json", "assets/images/tilemap_packed.png"))
+    if (!mMap.loadFromJSON("assets/images/map.json"))
         throw std::runtime_error("Map load failed in GameLogic");
 
     // 2) Поставить игрока в стартовую позицию
