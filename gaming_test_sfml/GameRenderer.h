@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "GameLogic.h"
+#include <SFML/Graphics/RectangleShape.hpp>
 
 class GameRenderer {
 public:
@@ -15,5 +16,8 @@ private:
     sf::Font                mFont;
     sf::Text                mScoreText;
     sf::Text                mTimeText;
-    sf::Text                mActiveText;    
+    sf::Text                mActiveText;
+
+    sf::RectangleShape mInteractionOverlay;
+    sf::Text           mInteractionText;
 };
