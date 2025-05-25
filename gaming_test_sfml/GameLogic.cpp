@@ -78,6 +78,8 @@ void GameLogic::handleInput(sf::Keyboard::Key key, bool isPressed)
 
 void GameLogic::update(sf::Time dt)
 {
+    mElapsedTime += dt.asSeconds();
+
     if (mPaused || mInInteraction) return;
     // 1) Рассчитать желаемое смещение игрока
     sf::Vector2f desired = mPlayer.computeMovement(dt);

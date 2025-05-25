@@ -46,15 +46,17 @@ public:
     bool spawnOne();
 
 private:
-
     Map             mMap;
     Player          mPlayer;
 
     std::vector<std::unique_ptr<Incident>> mIncidents;
+
+    int   mScore = 0;    // текущий счёт
+    float mElapsedTime = 0.f;  // прошедшее время в секундах
+
     ParkingViolation* mCurrentViolation = nullptr;
     bool                mPaused = false;
     bool                mInInteraction = false;
-    int                 mScore = 0;
 
     // текстуры для инцидентов
     sf::Texture mCarTexture;
@@ -72,4 +74,13 @@ private:
     // Вспомогательная
     static std::string pickColor(const std::string& desired,
         const std::unordered_map<std::string, sf::Texture>& dict);
+
+public:
+    const Map& getMap() const { return mMap; }             // чтобы mLogic.getMap() работал
+    int   getScore() const { return mScore; }
+    int   getActiveIncidents() const { return static_cast<int>(mIncidents.size()); }
+    float getElapsedSeconds() const { return mElapsedTime; }
+
+    const std::vector<std::unique_ptr<Incident>>& getIncidents() const { return mIncidents; }
+    Player& getPlayer() { return mPlayer; }
 };

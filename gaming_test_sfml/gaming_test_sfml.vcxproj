@@ -142,6 +142,7 @@ sfml-system.lib
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="GameRenderer.cpp" />
     <ClCompile Include="gaming_test_sfml.cpp" />
@@ -149,8 +150,11 @@ sfml-system.lib
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="ParkingViolation.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="UI\Button.cpp" />
+    <ClCompile Include="UI\MainMenuScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameRenderer.h" />
     <ClInclude Include="Incident.h" />
@@ -158,6 +162,8 @@ sfml-system.lib
     <ClInclude Include="Map.h" />
     <ClInclude Include="ParkingViolation.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="UI\Button.h" />
+    <ClInclude Include="UI\MainMenuScreen.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

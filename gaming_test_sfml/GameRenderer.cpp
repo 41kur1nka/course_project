@@ -1,115 +1,63 @@
 #include "GameRenderer.h"
+#include <iomanip>
+#include <sstream>
 #include <stdexcept>
-#include <algorithm>
-#include <iostream>
 
 GameRenderer::GameRenderer(sf::RenderWindow& window, GameLogic& logic)
     : mWindow(window)
     , mLogic(logic)
 {
-    // 2) загрузим шрифт для текста паузы
+    // Загружаем шрифт для HUD
     if (!mFont.loadFromFile("assets/fonts/Montserrat-Black.ttf"))
-        throw std::runtime_error("Failed to load font arial.ttf");
+        throw std::runtime_error("Failed to load font for HUD");
 
-    //// 3) настроим полупрозрачный прямоугольник поверх всего экрана
-    ////    размер возьмём из текущего вида
-    sf::Vector2f viewSize = mWindow.getView().getSize();
-    mPauseOverlay.setSize(viewSize);
-    mPauseOverlay.setFillColor(sf::Color(0, 0, 0, 150)); // чёрный с alpha=150
-
-    // 4) настроим текст
-    mPauseText.setFont(mFont);
-    mPauseText.setString("PAUSED");
-    mPauseText.setCharacterSize(48);
-    mPauseText.setFillColor(sf::Color::White);
-
-    // центрируем текст по середине вида
-    sf::FloatRect tb = mPauseText.getLocalBounds();
-    mPauseText.setOrigin(tb.left + tb.width / 2.f,
-        tb.top + tb.height / 2.f);
-    mPauseText.setPosition(viewSize.x / 2.f, viewSize.y / 2.f);
-
-    //Resume button
-    mResumeBtn.setSize({ 200.f,60.f });
-    mResumeBtn.setFillColor(sf::Color(100, 100, 100));
-    mResumeBtn.setPosition(viewSize.x / 2.f - 100.f,viewSize.y / 2.f - 40.f);
-    
-    mResumeText.setFont(mFont);
-    mResumeText.setString("Resume");
-    mPauseText.setCharacterSize(48);
-    mPauseText.setFillColor(sf::Color::White);
-    mResumeText.setPosition(
-        mResumeBtn.getPosition().x + (mResumeBtn.getSize().x - mResumeText.getLocalBounds().width) / 2.f,
-        mResumeBtn.getPosition().y + (mResumeBtn.getSize().y - mResumeText.getLocalBounds().height) / 2.f - 5.f
-    );
-
-    //Exit button
-    mExitBtn = mResumeBtn;
-    mExitBtn.setPosition(viewSize.x / 2.f - 100.f, viewSize.y / 2.f + 40.f);
-    mExitText = mResumeText;
-    mExitText.setString("Exit");
-    mExitText.setPosition(mExitBtn.getPosition().x + (mExitBtn.getSize().x - mExitText.getLocalBounds().width) / 2.f,
-        mExitBtn.getPosition().y + (mExitBtn.getSize().y - mExitText.getLocalBounds().height) / 2.f - 5.f
-    );
+    // Настраиваем три текстовых поля
+    auto initText = [&](sf::Text& t) {
+        t.setFont(mFont);
+        t.setCharacterSize(20);
+        t.setFillColor(sf::Color::White);
+        };
+    initText(mScoreText);
+    initText(mTimeText);
+    initText(mActiveText);
 }
 
 void GameRenderer::render()
 {
-    // 1) получаем прямоугольник
-    sf::IntRect playArea = mLogic.getPlayableArea();
+    // 1) Отрисовка сцены
+    // Карта
+    mWindow.draw(mLogic.getMap());
 
-    // 2) настраиваем View
-    sf::View view;
-    view.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));      // на весь экран
-    view.setSize(static_cast<float>(playArea.width),
-        static_cast<float>(playArea.height));
-    view.setCenter(
-        playArea.left + playArea.width * 0.5f,
-        playArea.top + playArea.height * 0.5f
-    );
-    float scaleFactor = 1.f;
-    view.zoom(1.f / scaleFactor);
+    // Инциденты
+    for (auto& inc : mLogic.getIncidents())
+        inc->render(mWindow);
 
-    mWindow.setView(view);
+    // Игрок
+    mLogic.getPlayer().render(mWindow);
 
-    // 3) Очищаем и рисуем
-    mWindow.clear();
-    mLogic.renderScene(mWindow);
+    // 2) Отрисовка HUD
+    // 2.1 Счёт
+    mScoreText.setString("Score: " + std::to_string(mLogic.getScore()));
+    mScoreText.setPosition(10.f, 10.f);
+    mWindow.draw(mScoreText);
 
-    // 4) Сбрасываем вид для UI/меню
-    mWindow.setView(mWindow.getDefaultView());
-    if (mLogic.isInteracting()) {
-        sf::RectangleShape bg(sf::Vector2f(mWindow.getSize()));
-        bg.setFillColor(sf::Color(0, 0, 0, 180));
-        mWindow.draw(bg);
-
-        sf::Text txt("Press E for stop crime", mFont, 24);
-        txt.setFillColor(sf::Color::White);
-        txt.setPosition(50, 50);
-        mWindow.draw(txt);
-    }else if (mLogic.isPaused()) {
-        /*mWindow.draw(mPauseOverlay);
-        mWindow.draw(mPauseText);*/
-
-        //Draw buttons
-        mWindow.draw(mResumeBtn);
-        mWindow.draw(mResumeText);
-        mWindow.draw(mExitBtn);
-        mWindow.draw(mExitText);
+    // 2.2 Время (mm:ss)
+    {
+        int total = static_cast<int>(mLogic.getElapsedSeconds());
+        int mm = total / 60;
+        int ss = total % 60;
+        std::ostringstream oss;
+        oss << "Time: "
+            << std::setw(2) << std::setfill('0') << mm
+            << ":"
+            << std::setw(2) << std::setfill('0') << ss;
+        mTimeText.setString(oss.str());
     }
+    mTimeText.setPosition(10.f, 40.f);
+    mWindow.draw(mTimeText);
 
-    mWindow.display();
-}
-
-void GameRenderer::handleMouseClick(const sf::Vector2f& mousePos, sf::RenderWindow& window)
-{
-    // клацнули на Resume?
-    if (mResumeBtn.getGlobalBounds().contains(mousePos)) {
-        mLogic.togglePause();    // снять паузу
-        return;
-    }
-    // клацнули на Exit?
-    if (mExitBtn.getGlobalBounds().contains(mousePos)) {
-        window.close();          // выход из программы
-    }
+    // 2.3 Активные инциденты
+    mActiveText.setString("Active: " + std::to_string(mLogic.getActiveIncidents()));
+    mActiveText.setPosition(10.f, 70.f);
+    mWindow.draw(mActiveText);
 }
