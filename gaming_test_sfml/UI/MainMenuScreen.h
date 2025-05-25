@@ -12,7 +12,7 @@ public:
 	explicit MainMenuScreen(GameState& stateRef);
 
 	// Загрузить все ассеты (текстуры кнопок и фон)
-	void loadAssets();
+	void loadAssets(const sf::RenderWindow& window);
 
 	// Обновить (проверить кнопки)
 	void update(const sf::RenderWindow& window);

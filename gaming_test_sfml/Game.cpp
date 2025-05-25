@@ -21,7 +21,7 @@ Game::Game()
     , mRenderer(mWindow, mLogic)
 {
     // здесь можно ещё настроить иконку окна, инициализировать рандом и т.п.
-    mMainMenu.loadAssets();
+    mMainMenu.loadAssets(mWindow);
     std::srand(unsigned(std::time(nullptr)));
 }
 

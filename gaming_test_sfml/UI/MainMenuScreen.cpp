@@ -4,7 +4,7 @@
 
 MainMenuScreen::MainMenuScreen(GameState& stateRef):mState(stateRef){}
 
-void MainMenuScreen::loadAssets()
+void MainMenuScreen::loadAssets(const sf::RenderWindow& window)
 {
     // Опционально: фон
     if (!mBgTex.loadFromFile("assets/ui/menu_bg.png"))
@@ -20,35 +20,48 @@ void MainMenuScreen::loadAssets()
     {
         throw std::runtime_error("Failed to load MainMenu button textures");
     }
-    if (!scoreN.loadFromFile("assets/ui/btn_gamemenu_norm.png") ||
-        !scoreH.loadFromFile("assets/ui/btn_gamemenu_hover.png") ||
-        !scoreP.loadFromFile("assets/ui/btn_gamemenu_down.png"))
+    if (!scoreN.loadFromFile("assets/ui/btn_scores_norm.png") ||
+        !scoreH.loadFromFile("assets/ui/btn_scores_hover.png") ||
+        !scoreP.loadFromFile("assets/ui/btn_scores_down.png"))
     {
         throw std::runtime_error("Failed to load MainMenu button textures");
     }
 
-    // Позиции кнопок — отступаем от центра
-    float cx = mBgTex.getSize().x ? float(mBgTex.getSize().x) / 2.f: 400.f; // центр окна X
-    float y = 200.f; // стартовая Y-позиция
+    if (!setN.loadFromFile("assets/ui/btn_settings_norm.png") ||
+        !setH.loadFromFile("assets/ui/btn_settings_hover.png") ||
+        !setP.loadFromFile("assets/ui/btn_settings_down.png"))
+    {
+        throw std::runtime_error("Failed to load MainMenu button textures");
+    }
+
+    //  Вычисляем центр окна
+    float cx = window.getSize().x / 2.f;
+    // Делаем три кнопки по вертикали с шагом в высоту + 20px отступ
+    float buttonHeight = static_cast<float>(startN.getSize().y);
+    float totalHeight = buttonHeight * 3 + 20.f * 2; // между ними по 20px
+    float startY = window.getSize().y / 2.f - totalHeight / 2.f;
+
+    // 4) Заполняем вектор кнопок
+    mButtons.clear();
 
     // START GAME
     mButtons.emplace_back(
         startN, startH, startP,
-        sf::Vector2f(cx - startN.getSize().x / 2.f, y),
+        sf::Vector2f(cx - startN.getSize().x / 2.f, startY),
         [&]() { mState = GameState::Playing; }
     );
 
     // HIGH SCORES
     mButtons.emplace_back(
         scoreN, scoreH, scoreP,
-        sf::Vector2f(cx - scoreN.getSize().x / 2.f, y + 100.f),
+        sf::Vector2f(cx - scoreN.getSize().x / 2.f, startY + buttonHeight + 20.f),
         [&]() { mState = GameState::HighScores; }
     );
 
     // SETTINGS
     mButtons.emplace_back(
-        startN, startH, startP,
-        sf::Vector2f(cx - startN.getSize().x / 2.f, y + 200.f),
+        setN, setH, setP,
+        sf::Vector2f(cx - setN.getSize().x / 2.f, startY + (buttonHeight + 20.f) * 2),
         [&]() { mState = GameState::Settings; }
     );
 }

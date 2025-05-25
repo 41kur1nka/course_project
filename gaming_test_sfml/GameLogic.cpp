@@ -167,6 +167,12 @@ void GameLogic::finishInteraction(bool ok)
     }
     mCurrentViolation = nullptr;
     mInInteraction = false;
+
+    //сбрасываем флаги движения
+    mPlayer.setMovingUp(false);
+    mPlayer.setMovingDown(false);
+    mPlayer.setMovingLeft(false);
+    mPlayer.setMovingRight(false);
 }
 
 bool GameLogic::spawnOne()
