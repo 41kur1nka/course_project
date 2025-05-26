@@ -19,9 +19,11 @@ Game::Game()
     , mState(GameState::MainMenu) 
     , mMainMenu(mState)
     , mRenderer(mWindow, mLogic)
+    , mPauseScreen(mState)
 {
     // здесь можно ещё настроить иконку окна, инициализировать рандом и т.п.
     mMainMenu.loadAssets(mWindow);
+    mPauseScreen.loadAssets(mWindow);
     std::srand(unsigned(std::time(nullptr)));
 }
 
@@ -58,10 +60,13 @@ void Game::processInput()
             break;
 
         case GameState::Paused:
-            if (e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::Escape) {
+            if (e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::Escape)
                 mState = GameState::Playing;
+            if (e.type == sf::Event::MouseButtonReleased &&
+                e.mouseButton.button == sf::Mouse::Left)
+            {
+                mPauseScreen.update(mWindow);
             }
-            // TODO: обработка кликов по кнопкам Resume/Exit
             break;
 
         
@@ -84,6 +89,11 @@ void Game::update(sf::Time dt)
     if (mState == GameState::Playing) {
         mLogic.update(dt);
     }
+    if (mState == GameState::Paused) {
+        mPauseScreen.update(mWindow);
+        return;
+    }
+
     // для остальных состояний — пока без логики
 }
 
@@ -98,16 +108,15 @@ void Game::render()
         break;
 
     case GameState::Paused: {
-        // сначала сцена
         mRenderer.render();
-        // затем полупрозрачный фон
         sf::RectangleShape overlay(
             sf::Vector2f((float)mWindow.getSize().x,
                 (float)mWindow.getSize().y)
         );
         overlay.setFillColor(sf::Color(0, 0, 0, 150));
         mWindow.draw(overlay);
-        // TODO: отрисовать кнопки Resume/Exit
+
+        mPauseScreen.draw(mWindow);
         mWindow.display();
         break;
     }

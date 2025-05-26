@@ -152,6 +152,7 @@ sfml-system.lib
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="UI\Button.cpp" />
     <ClCompile Include="UI\MainMenuScreen.cpp" />
+    <ClCompile Include="UI\PauseScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
@@ -164,6 +165,7 @@ sfml-system.lib
     <ClInclude Include="Player.h" />
     <ClInclude Include="UI\Button.h" />
     <ClInclude Include="UI\MainMenuScreen.h" />
+    <ClInclude Include="UI\PauseScreen.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

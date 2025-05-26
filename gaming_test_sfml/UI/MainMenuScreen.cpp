@@ -1,8 +1,10 @@
 #include "MainMenuScreen.h"
 #include "../Game.h"
 #include <stdexcept>
+#include "PauseScreen.h"
 
 MainMenuScreen::MainMenuScreen(GameState& stateRef):mState(stateRef){}
+
 
 void MainMenuScreen::loadAssets(const sf::RenderWindow& window)
 {

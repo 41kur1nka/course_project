@@ -75,6 +75,17 @@ private:
     static std::string pickColor(const std::string& desired,
         const std::unordered_map<std::string, sf::Texture>& dict);
 
+
+    // QTE
+    struct QTEState {
+        std::vector<sf::Keyboard::Key> sequence; // последовательность
+        size_t currentIndex = 0;                 // какой сейчас ждём
+        int attempt = 0;                         // номер попытки (0...2)
+        bool active = false;                     // показывать ли QTE сейчас
+        int scorePerAttempt[3] = { 10, 7, 4 };     // очки за каждую попытку
+    };
+    QTEState mQTE;
+
 public:
     const Map& getMap() const { return mMap; }             // чтобы mLogic.getMap() работал
     int   getScore() const { return mScore; }
@@ -83,4 +94,12 @@ public:
 
     const std::vector<std::unique_ptr<Incident>>& getIncidents() const { return mIncidents; }
     Player& getPlayer() { return mPlayer; }
+
+    //QTE
+    void startQTE(bool resetAttempt = true);
+
+    bool isQTEActive() const { return mQTE.active; }
+    const std::vector<sf::Keyboard::Key>& getQTESequence() const { return mQTE.sequence; }
+    size_t getQTECurrentIndex() const { return mQTE.currentIndex; }
+    int getQTEAttempt() const { return mQTE.attempt; }
 };

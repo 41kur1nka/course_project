@@ -15,6 +15,7 @@ enum class GameState {
 };
 
 #include "UI/MainMenuScreen.h"
+#include "UI/PauseScreen.h"
 
 class Game {
 public:
@@ -32,5 +33,7 @@ private:
     MainMenuScreen     mMainMenu;
     GameRenderer       mRenderer;
     sf::Clock          mClock;
+    PauseScreen mPauseScreen;
+
 
 };

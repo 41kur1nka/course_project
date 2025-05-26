@@ -48,11 +48,45 @@ void GameLogic::handleInput(sf::Keyboard::Key key, bool isPressed)
     }
 
     // Если в мини-игре — по E выходим
-    if (mInInteraction) {
-        if (key == sf::Keyboard::E && isPressed)
-            finishInteraction(true);
-        return;
+    if (mInInteraction && mQTE.active) {
+        // Если правильная клавиша
+        if (isPressed && key == mQTE.sequence[mQTE.currentIndex]) {
+            mQTE.currentIndex++;
+            if (mQTE.currentIndex >= mQTE.sequence.size()) {
+                // Успех!
+                if (mCurrentViolation) mCurrentViolation->resolve();
+                mScore += mQTE.scorePerAttempt[mQTE.attempt];
+                mInInteraction = false;
+                mQTE.active = false;
+                mCurrentViolation = nullptr;
+            }
+            return;
+        }
+
+        // Только если нажата ЛЮБАЯ из разрешённых, но НЕ та!
+        static std::vector<sf::Keyboard::Key> allowed = {
+            sf::Keyboard::W, sf::Keyboard::A, sf::Keyboard::S,
+            sf::Keyboard::D, sf::Keyboard::E, sf::Keyboard::Q
+        };
+        if (isPressed
+            && std::find(allowed.begin(), allowed.end(), key) != allowed.end()
+            && key != mQTE.sequence[mQTE.currentIndex]) // <-- НЕ та буква!
+        {
+            mQTE.attempt++;
+            if (mQTE.attempt >= 3) {
+                if (mCurrentViolation) mCurrentViolation->resolve();
+                mInInteraction = false;
+                mQTE.active = false;
+                mCurrentViolation = nullptr;
+            }
+            else {
+                // Начинаем новую последовательность, попытку НЕ сбрасываем!
+                startQTE(false);
+            }
+            return;
+        }
     }
+
 
     // Нажали E рядом с машиной?
     if (key == sf::Keyboard::E && isPressed && !mPaused) {
@@ -156,7 +190,7 @@ void GameLogic::renderScene(sf::RenderWindow& window)
 void GameLogic::startInteraction()
 {
     mInInteraction = true;
-    // можно ещё остановить логику движения, если нужно
+    startQTE(true);
 }
 
 void GameLogic::finishInteraction(bool ok)
@@ -270,4 +304,21 @@ std::string GameLogic::pickColor(const std::string& desired, const std::unordere
         keys.push_back(p.first);
 
     return keys[std::rand() % keys.size()];
+}
+
+
+void GameLogic::startQTE(bool resetAttempt) {
+    // Сброс QTE состояния
+    mQTE.sequence.clear();
+    mQTE.currentIndex = 0;
+    if (resetAttempt) mQTE.attempt = 0;
+    mQTE.active = true;
+
+    static std::vector<sf::Keyboard::Key> possible = {
+        sf::Keyboard::W, sf::Keyboard::A, sf::Keyboard::S, sf::Keyboard::D, sf::Keyboard::E, sf::Keyboard::Q
+    };
+    int QTE_LENGTH = 7;
+    for (int i = 0; i < QTE_LENGTH; ++i) {
+        mQTE.sequence.push_back(possible[rand() % possible.size()]);
+    }
 }

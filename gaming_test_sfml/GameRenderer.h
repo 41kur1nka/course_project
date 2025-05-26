@@ -20,4 +20,7 @@ private:
 
     sf::RectangleShape mInteractionOverlay;
     sf::Text           mInteractionText;
+
+    // QTE
+    sf::Text mQTEText;
 };
