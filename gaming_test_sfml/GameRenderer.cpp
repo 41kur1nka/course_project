@@ -104,7 +104,7 @@ void GameRenderer::render()
             }
 
             // Показываем попытку
-            display += "\nAttempt: " + std::to_string(mLogic.getQTEAttempt() + 1) + " / 7";
+            display += "\nAttempt: " + std::to_string(mLogic.getQTEAttempt() + 1) + " / 3";
 
             mQTEText.setString(display);
             // Центрируем по экрану

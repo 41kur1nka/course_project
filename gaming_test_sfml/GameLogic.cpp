@@ -158,7 +158,7 @@ void GameLogic::update(sf::Time dt)
     // Обновляем инциденты
     sf::Vector2f pp = getPlayerPosition();
     for (auto& inc : mIncidents)
-        inc->update(pp, dt);
+        inc->update(pp, dt, mPlayer.getBounds());
 
     // Удаляем решённые
     mIncidents.erase(

@@ -1,11 +1,13 @@
 #include "PauseScreen.h"
-#include "../Game.h"
 #include <stdexcept>
+#include "../Game.h"
 
-PauseScreen::PauseScreen(GameState& stateRef)
-    : mState(stateRef)
+
+PauseScreen::PauseScreen(GameState& stateRef, HighScoresManager& scoresManager, GameLogic& logicRef)
+    : mState(stateRef), mScoresManager(scoresManager), mLogic(logicRef)
 {
 }
+
 
 void PauseScreen::loadAssets(const sf::RenderWindow& window)
 {
@@ -36,7 +38,10 @@ void PauseScreen::loadAssets(const sf::RenderWindow& window)
     mButtons.emplace_back(
         mExitNorm, mExitHover, mExitDown,
         sf::Vector2f(cx - bw / 2, cy + gap),
-        [&]() { mState = GameState::MainMenu; }
+        [&]() {
+            mScoresManager.addScore("Player", mLogic.getScore());
+            mState = GameState::MainMenu; }
+
     );
 }
 

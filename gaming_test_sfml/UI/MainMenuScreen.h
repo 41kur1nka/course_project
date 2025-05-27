@@ -5,11 +5,13 @@
 #include "Button.h"
 
 enum class GameState;
+class Game; // Forward declaration
+
 
 class MainMenuScreen {
 public:
 	// stateRef — ссылка на переменную в Game, чтобы менять её при кликах
-	explicit MainMenuScreen(GameState& stateRef);
+	explicit MainMenuScreen(GameState& stateRef, Game& gameRef);
 
 	// Загрузить все ассеты (текстуры кнопок и фон)
 	void loadAssets(const sf::RenderWindow& window);
@@ -22,6 +24,7 @@ public:
 
 private:
 	GameState& mState;
+	Game& mGame;
 	sf::Texture mBgTex;	
 	sf::Sprite mBgSprite;
 	sf::Texture startN, startH, startP;

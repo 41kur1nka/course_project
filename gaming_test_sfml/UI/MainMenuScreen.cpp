@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include "PauseScreen.h"
 
-MainMenuScreen::MainMenuScreen(GameState& stateRef):mState(stateRef){}
+MainMenuScreen::MainMenuScreen(GameState& stateRef, Game& gameRef):mState(stateRef), mGame(gameRef){}
 
 
 void MainMenuScreen::loadAssets(const sf::RenderWindow& window)
@@ -50,7 +50,8 @@ void MainMenuScreen::loadAssets(const sf::RenderWindow& window)
     mButtons.emplace_back(
         startN, startH, startP,
         sf::Vector2f(cx - startN.getSize().x / 2.f, startY),
-        [&]() { mState = GameState::Playing; }
+        [&]() { mGame.resetLogic();
+            mState = GameState::Playing; }
     );
 
     // HIGH SCORES

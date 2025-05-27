@@ -7,23 +7,27 @@
 #include <iostream>
 
 Game::Game()
-    : mLogic()  // используем GameLogic::GameLogic(), он сам загружает map.json
+    : mLogic(std::make_unique<GameLogic>())  // используем GameLogic::GameLogic(), он сам загружает map.json
     , mWindow(
         sf::VideoMode(
-            mLogic.getMapSize().x* mLogic.getTileSize().x,
-            mLogic.getMapSize().y* mLogic.getTileSize().y
+            mLogic->getMapSize().x* mLogic->getTileSize().x,
+            mLogic->getMapSize().y* mLogic->getTileSize().y
         ),
         "Beat Cops",
         sf::Style::Close
     )
     , mState(GameState::MainMenu) 
-    , mMainMenu(mState)
-    , mRenderer(mWindow, mLogic)
-    , mPauseScreen(mState)
+    , mMainMenu(mState, *this)
+    , mRenderer(std::make_unique<GameRenderer>(mWindow, *mLogic))
+    , mPauseScreen(std::make_unique<PauseScreen>(mState, mScoresManager, *mLogic))
+    , mScoresManager("scores.txt")
+    , mScoresScreen(mState, mScoresManager)
+
 {
     // здесь можно ещЄ настроить иконку окна, инициализировать рандом и т.п.
     mMainMenu.loadAssets(mWindow);
-    mPauseScreen.loadAssets(mWindow);
+    mPauseScreen->loadAssets(mWindow);
+    mScoresScreen.loadAssets(mWindow);
     std::srand(unsigned(std::time(nullptr)));
 }
 
@@ -36,6 +40,14 @@ void Game::run()
         render();
     }
 }
+
+void Game::resetLogic() {
+    mLogic = std::make_unique<GameLogic>();
+    mRenderer = std::make_unique<GameRenderer>(mWindow, *mLogic);
+    mPauseScreen = std::make_unique<PauseScreen>(mState, mScoresManager, *mLogic);
+    mPauseScreen->loadAssets(mWindow);
+}
+
 
 void Game::processInput()
 {
@@ -52,10 +64,10 @@ void Game::processInput()
                 mState = GameState::Paused;
             }
             else if (e.type == sf::Event::KeyPressed) {
-                mLogic.handleInput(e.key.code, true);
+                mLogic->handleInput(e.key.code, true);
             }
             else if (e.type == sf::Event::KeyReleased) {
-                mLogic.handleInput(e.key.code, false);
+                mLogic->handleInput(e.key.code, false);
             }
             break;
 
@@ -65,12 +77,16 @@ void Game::processInput()
             if (e.type == sf::Event::MouseButtonReleased &&
                 e.mouseButton.button == sf::Mouse::Left)
             {
-                mPauseScreen.update(mWindow);
+                mPauseScreen->update(mWindow);
             }
             break;
 
         
         case GameState::HighScores:
+            if (e.type == sf::Event::MouseButtonReleased && e.mouseButton.button == sf::Mouse::Left)
+                mScoresScreen.update(mWindow);
+            break;
+
         case GameState::Settings:
             // TODO: добавим позже обработку меню
             break;
@@ -80,20 +96,23 @@ void Game::processInput()
 
 void Game::update(sf::Time dt)
 {
-    if (mState == GameState::MainMenu) {
+    if (mState == GameState::MainMenu ) {
         // ќбновл€ем кнопки каждый кадр:
         mMainMenu.update(mWindow);
         // и сразу выходим Ч логики геймпле€ тут нет
         return;
     }
     if (mState == GameState::Playing) {
-        mLogic.update(dt);
+        mLogic->update(dt);
     }
     if (mState == GameState::Paused) {
-        mPauseScreen.update(mWindow);
+        mPauseScreen->update(mWindow);
         return;
     }
-
+    if (mState == GameState::HighScores) {
+        mScoresScreen.update(mWindow);
+        return;
+    }
     // дл€ остальных состо€ний Ч пока без логики
 }
 
@@ -103,12 +122,12 @@ void Game::render()
 
     switch (mState) {
     case GameState::Playing:
-        mRenderer.render();
+        mRenderer->render();
         mWindow.display();
         break;
 
     case GameState::Paused: {
-        mRenderer.render();
+        mRenderer->render();
         sf::RectangleShape overlay(
             sf::Vector2f((float)mWindow.getSize().x,
                 (float)mWindow.getSize().y)
@@ -116,7 +135,7 @@ void Game::render()
         overlay.setFillColor(sf::Color(0, 0, 0, 150));
         mWindow.draw(overlay);
 
-        mPauseScreen.draw(mWindow);
+        mPauseScreen->draw(mWindow);
         mWindow.display();
         break;
     }
@@ -126,7 +145,11 @@ void Game::render()
         mWindow.display();
         break;
 
-        //TODO : highscores, settings
+    case GameState::HighScores:
+        mScoresScreen.draw(mWindow);
+        mWindow.display();
+        break;
+        //TODO : settings
     default:
         break;
     }
