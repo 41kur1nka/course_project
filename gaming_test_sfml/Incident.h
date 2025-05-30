@@ -11,4 +11,6 @@ public:
 	virtual void render(sf::RenderTarget& target) = 0;
 	// Метод для опредедения, завершён ли инцедент
 	virtual bool isResolved() const = 0;
+
+	virtual void resolve() = 0;
 };

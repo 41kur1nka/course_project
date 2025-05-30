@@ -38,6 +38,7 @@ private:
         sf::FloatRect rect;       // { x, y, width, height }
         std::string   orientation; // "side" или "front"
         std::string   color;       // "red", "blue" и т.п.
+        std::string incidentType = "car";
     };
     std::vector<SpawnZone> mSpawnZones;
 

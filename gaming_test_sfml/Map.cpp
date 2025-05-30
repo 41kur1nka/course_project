@@ -114,8 +114,7 @@ bool Map::loadFromJSON(const std::string& jsonPath)
 
     // 7) обработка spawnzones
     for (auto& layer : j.at("layers")) {
-        if (layer.at("type").get<std::string>() != "objectgroup" ||
-            layer.at("name").get<std::string>() != "SpawnZones")
+        if (layer.at("type").get<std::string>() != "objectgroup")
             continue;
 
         for (auto& obj : layer.at("objects")) {
@@ -139,12 +138,15 @@ bool Map::loadFromJSON(const std::string& jsonPath)
                     auto val = prop.at("value").get<std::string>();
                     if (name == "orientation") sz.orientation = val;
                     if (name == "color")       sz.color = val;
+                    if (name == "incidentType") sz.incidentType = val;
                 }
             }
             mSpawnZones.push_back(std::move(sz));
         }
-        break;
     } 
+
+    // обработка fightzones
+
     
 
     return true;

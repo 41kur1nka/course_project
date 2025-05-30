@@ -1,6 +1,7 @@
 Player 104
 Player 60
 Player 50
+Player 34
 Player 14
 Player 10
 Player 10
@@ -8,6 +9,14 @@ Player 10
 Player 10
 Player 10
 Player 10
+Player 10
+Player 0
+Player 0
+Player 0
+Player 0
+Player 0
+Player 0
+Player 0
 Player 0
 Player 0
 Player 0

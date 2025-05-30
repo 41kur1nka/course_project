@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <cstdlib> 
 #include "ParkingViolation.h"
+#include "FightIncident.h"
 #include "Player.h"
 #include <algorithm>
 #include <iostream>
@@ -23,7 +24,7 @@ GameLogic::GameLogic()
     // пример спавна одной неправильно припаркованной машины
     mQuestionSheetTexture.loadFromFile("assets/images/mark.png");
     
-
+    mFightSheetTexture.loadFromFile("assets/images/fight/fight.png");
 
     // спавним нарушенную парковку 
     for (auto color : { "red","blue","green","white","yellow"}) {
@@ -94,6 +95,13 @@ void GameLogic::handleInput(sf::Keyboard::Key key, bool isPressed)
             if (auto pv = dynamic_cast<ParkingViolation*>(inc.get())) {
                 if (pv->isPlayerInRange()) {
                     mCurrentViolation = pv;
+                    startInteraction();
+                    return;
+                }
+            }
+            if (auto fi = dynamic_cast<FightIncident*>(inc.get())) {
+                if (fi->isPlayerInRange()) {
+                    mCurrentViolation = fi;
                     startInteraction();
                     return;
                 }
@@ -225,66 +233,122 @@ bool GameLogic::spawnOne()
         // 1) случайная зона
         const auto& sz = zones[std::rand() % zones.size()];
 
-        // 2) Выбираем текстуру машины
-        auto& dict = (sz.orientation == "front")
-            ? mCarFrontTextures
-            : mCarSideTextures;
-        std::string colorKey = pickColor(sz.color, dict);
-        const sf::Texture& carTex = dict.at(colorKey);
+        if (sz.incidentType == "car") {
+            // 2) Выбираем текстуру машины
+            auto& dict = (sz.orientation == "front")
+                ? mCarFrontTextures
+                : mCarSideTextures;
+            std::string colorKey = pickColor(sz.color, dict);
+            const sf::Texture& carTex = dict.at(colorKey);
 
-        // 3) Создаем временный спрайт, чтобы узнать его размер
-        sf::Sprite tempCar(carTex);
-        float scale = 1.5f;  // или тот же const 1.5f
-        tempCar.setScale(scale, scale);
-        tempCar.setPosition(0.f, 0.f);
-        // Получаем размеры с учётом масштаба
-        sf::FloatRect carBounds = tempCar.getGlobalBounds();
-        float spriteW = carBounds.width;
-        float spriteH = carBounds.height;
+            // 3) Создаем временный спрайт, чтобы узнать его размер
+            sf::Sprite tempCar(carTex);
+            float scale = 1.5f;  // или тот же const 1.5f
+            tempCar.setScale(scale, scale);
+            tempCar.setPosition(0.f, 0.f);
+            // Получаем размеры с учётом масштаба
+            sf::FloatRect carBounds = tempCar.getGlobalBounds();
+            float spriteW = carBounds.width;
+            float spriteH = carBounds.height;
 
-        // 4) Вычисляем допустимый диапазон точек спавна
-        float minX = sz.rect.left;
-        float minY = sz.rect.top;
-        float maxX = sz.rect.left + sz.rect.width - spriteW;
-        float maxY = sz.rect.top + sz.rect.height - spriteH;
-        if (maxX < minX || maxY < minY)
-            continue;  // зона слишком мала — пропускаем
+            // 4) Вычисляем допустимый диапазон точек спавна
+            float minX = sz.rect.left;
+            float minY = sz.rect.top;
+            float maxX = sz.rect.left + sz.rect.width - spriteW;
+            float maxY = sz.rect.top + sz.rect.height - spriteH;
+            if (maxX < minX || maxY < minY)
+                continue;  // зона слишком мала — пропускаем
 
-        // 5) Случайная точка в этом диапазоне
-        float rx = minX + (std::rand() / float(RAND_MAX)) * (maxX - minX);
-        float ry = minY + (std::rand() / float(RAND_MAX)) * (maxY - minY);
+            // 5) Случайная точка в этом диапазоне
+            float rx = minX + (std::rand() / float(RAND_MAX)) * (maxX - minX);
+            float ry = minY + (std::rand() / float(RAND_MAX)) * (maxY - minY);
 
-        // 6) Проверяем пересечение с уже существующими машинами
-        tempCar.setPosition(rx, ry);
-        auto newBounds = tempCar.getGlobalBounds();
+            // 6) Проверяем пересечение с уже существующими машинами
+            tempCar.setPosition(rx, ry);
+            auto newBounds = tempCar.getGlobalBounds();
 
-        bool overlap = false;
-        for (auto& inc : mIncidents) {
-            if (!inc->isResolved()) {
-                auto pv = dynamic_cast<ParkingViolation*>(inc.get());
-                if (pv && pv->getCarBounds().intersects(newBounds)) {
-                    overlap = true;
-                    break;
+            bool overlap = false;
+            for (auto& inc : mIncidents) {
+                if (!inc->isResolved()) {
+                    auto pv = dynamic_cast<ParkingViolation*>(inc.get());
+                    if (pv && pv->getCarBounds().intersects(newBounds)) {
+                        overlap = true;
+                        break;
+                    }
                 }
             }
+            if (overlap) continue;
+
+            // параметры вопросика-спрайтшита:
+            unsigned        frameCount = 15;
+            sf::Vector2u    frameSize{ 6,23 };
+            float           frameDuration = 0.1f;
+            mIncidents.emplace_back(std::make_unique<ParkingViolation>(
+                sf::Vector2f(rx, ry),
+                carTex,
+                mQuestionSheetTexture,
+                frameCount,
+                frameSize,
+                frameDuration
+
+            ));
+            return true;
+
         }
-        if (overlap) continue;
+        else if (sz.incidentType == "fight") {
+            // 1. Временный спрайт, чтобы узнать размеры
+            unsigned frameCount = 6; // число кадров
+            sf::Vector2u frameSize{ 23, 15 }; // реальный размер кадра
+            float scale = 1.5f;
 
-        // 7) Всё чисто — спавним настоящую машину
+            sf::Sprite tempFight(mFightSheetTexture);
+            tempFight.setTextureRect(sf::IntRect(0, 0, frameSize.x, frameSize.y)); // ВАЖНО!
+            tempFight.setScale(scale, scale);
+            tempFight.setPosition(0.f, 0.f);
 
-        // параметры вопросика-спрайтшита:
-        unsigned        frameCount = 15;
-        sf::Vector2u    frameSize{ 6,23 };
-        float           frameDuration = 0.1f;
-        mIncidents.emplace_back(std::make_unique<ParkingViolation>(
-            sf::Vector2f(rx, ry),
-            carTex,
-            mQuestionSheetTexture,
-            frameCount,
-            frameSize,
-            frameDuration
-        ));
-        return true;
+            sf::FloatRect fightBounds = tempFight.getGlobalBounds();
+            float spriteW = fightBounds.width;
+            float spriteH = fightBounds.height;
+
+            // 2. Диапазон спавна
+            float minX = sz.rect.left;
+            float minY = sz.rect.top;
+            float maxX = sz.rect.left + sz.rect.width - spriteW;
+            float maxY = sz.rect.top + sz.rect.height - spriteH;
+            if (maxX < minX || maxY < minY)
+                continue;
+
+            float rx = minX + (std::rand() / float(RAND_MAX)) * (maxX - minX);
+            float ry = minY + (std::rand() / float(RAND_MAX)) * (maxY - minY);
+
+            tempFight.setPosition(rx, ry);
+            auto newBounds = tempFight.getGlobalBounds();
+
+            bool overlap = false;
+            for (auto& inc : mIncidents) {
+                if (!inc->isResolved()) {
+                    if (auto pv = dynamic_cast<ParkingViolation*>(inc.get())) {
+                        if (pv->getCarBounds().intersects(newBounds)) { overlap = true; break; }
+                    }
+                    if (auto fi = dynamic_cast<FightIncident*>(inc.get())) {
+                        if (fi->getFightBounds().intersects(newBounds)) { overlap = true; break; }
+                    }
+                }
+            }
+            if (overlap) continue;
+
+            float frameDuration = 0.1f;
+
+            mIncidents.emplace_back(std::make_unique<FightIncident>(
+                sf::Vector2f(rx, ry),
+                mFightSheetTexture,
+                frameCount,
+                frameSize,
+                frameDuration
+            ));
+            return true;
+        }
+
     }
 
     return false;

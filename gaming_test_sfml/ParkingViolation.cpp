@@ -3,7 +3,8 @@
 #include <SFML/System/Time.hpp>
 #include <vector>
 #include <iostream>
-ParkingViolation::ParkingViolation(const sf::Vector2f &pos, const sf::Texture& carTex, const sf::Texture& questionTex, 
+#include "FightIncident.h"
+ParkingViolation::ParkingViolation(const sf::Vector2f &pos, const sf::Texture& carTex, const sf::Texture& questionTex,
 	unsigned frameCount,
 	sf::Vector2u frameSize,
 	float frameDuration):
@@ -39,6 +40,7 @@ ParkingViolation::ParkingViolation(const sf::Vector2f &pos, const sf::Texture& c
 	}
 	
 }
+
 
 void ParkingViolation::update(const sf::Vector2f& playerPos, sf::Time dt, const sf::FloatRect& playerBounds)
 {

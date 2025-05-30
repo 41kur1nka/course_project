@@ -142,6 +142,7 @@ sfml-system.lib
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FightIncident.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="GameRenderer.cpp" />
@@ -157,6 +158,7 @@ sfml-system.lib
     <ClCompile Include="UI\PauseScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FightIncident.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameRenderer.h" />

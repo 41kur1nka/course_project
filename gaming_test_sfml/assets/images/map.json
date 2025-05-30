@@ -167,6 +167,11 @@
                          "value":"random"
                         }, 
                         {
+                         "name":"incidentType",
+                         "type":"string",
+                         "value":"car"
+                        }, 
+                        {
                          "name":"orientation",
                          "type":"string",
                          "value":"front"
@@ -187,6 +192,11 @@
                          "name":"color",
                          "type":"string",
                          "value":"random"
+                        }, 
+                        {
+                         "name":"incidentType",
+                         "type":"string",
+                         "value":"car"
                         }, 
                         {
                          "name":"orientation",
@@ -211,6 +221,11 @@
                          "value":"random"
                         }, 
                         {
+                         "name":"incidentType",
+                         "type":"string",
+                         "value":"car"
+                        }, 
+                        {
                          "name":"orientation",
                          "type":"string",
                          "value":"side"
@@ -221,6 +236,102 @@
                  "width":318.5,
                  "x":417.5,
                  "y":303
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":18,
+         "name":"FightZones",
+         "objects":[
+                {
+                 "height":94.6666666666666,
+                 "id":10,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"incidentType",
+                         "type":"string",
+                         "value":"fight"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":76,
+                 "x":321.333333333333,
+                 "y":284
+                }, 
+                {
+                 "height":83,
+                 "id":12,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"incidentType",
+                         "type":"string",
+                         "value":"fight"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":133,
+                 "x":614,
+                 "y":787
+                }, 
+                {
+                 "height":56,
+                 "id":14,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"incidentType",
+                         "type":"string",
+                         "value":"fight"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":83,
+                 "x":165,
+                 "y":611
+                }, 
+                {
+                 "height":39,
+                 "id":15,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"incidentType",
+                         "type":"string",
+                         "value":"fight"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":102,
+                 "x":388,
+                 "y":516
+                }, 
+                {
+                 "height":53,
+                 "id":16,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"incidentType",
+                         "type":"string",
+                         "value":"fight"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":120,
+                 "x":628,
+                 "y":498
                 }],
          "opacity":1,
          "type":"objectgroup",

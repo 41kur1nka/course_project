@@ -54,13 +54,14 @@ private:
     int   mScore = 0;    // текущий счёт
     float mElapsedTime = 0.f;  // прошедшее время в секундах
 
-    ParkingViolation* mCurrentViolation = nullptr;
+    Incident* mCurrentViolation = nullptr;
     bool                mPaused = false;
     bool                mInInteraction = false;
 
     // текстуры для инцидентов
     sf::Texture mCarTexture;
     sf::Texture mQuestionSheetTexture;
+    sf::Texture mFightSheetTexture;
 
     std::unordered_map<std::string, sf::Texture> mCarSideTextures;
     std::unordered_map<std::string, sf::Texture> mCarFrontTextures;
