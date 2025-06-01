@@ -3,9 +3,11 @@
 #include <cstdlib> 
 #include "ParkingViolation.h"
 #include "FightIncident.h"
+#include "GraffitiIncident.h"
 #include "Player.h"
 #include <algorithm>
 #include <iostream>
+
 
 
 GameLogic::GameLogic()
@@ -25,6 +27,10 @@ GameLogic::GameLogic()
     mQuestionSheetTexture.loadFromFile("assets/images/mark.png");
     
     mFightSheetTexture.loadFromFile("assets/images/fight/fight.png");
+
+    mGraffitiLeftTexture.loadFromFile("assets/images/graffiti/graffiti_left.png");
+    mGraffitiRightTexture.loadFromFile("assets/images/graffiti/graffiti_right.png");
+
 
     // спавним нарушенную парковку 
     for (auto color : { "red","blue","green","white","yellow"}) {
@@ -102,6 +108,13 @@ void GameLogic::handleInput(sf::Keyboard::Key key, bool isPressed)
             if (auto fi = dynamic_cast<FightIncident*>(inc.get())) {
                 if (fi->isPlayerInRange()) {
                     mCurrentViolation = fi;
+                    startInteraction();
+                    return;
+                }
+            }
+            if (auto gi = dynamic_cast<GraffitiIncident*>(inc.get())) {
+                if (gi->isPlayerInRange()) {
+                    mCurrentViolation = gi;
                     startInteraction();
                     return;
                 }
@@ -348,6 +361,77 @@ bool GameLogic::spawnOne()
             ));
             return true;
         }
+        else if (sz.incidentType == "graffiti") {
+            // 1. Выбираем нужный спрайтшит по orientation
+            const sf::Texture* graffitiTex = &mGraffitiRightTexture; // дефолт — вправо
+            if (sz.orientation == "left") {
+                graffitiTex = &mGraffitiLeftTexture;
+            }
+
+            // 2. Параметры анимации для граффити
+            unsigned frameCount = 18; // или другое реальное количество кадров
+            sf::Vector2u frameSize{ 20, 16 }; // реальные размеры кадра
+            float frameDuration = 0.1f;
+            float scale = 1.5f;
+
+            // 3. Подсчёт спавна и overlap — аналогично FightIncident
+
+            sf::Sprite tempGraffiti(*graffitiTex);
+            tempGraffiti.setTextureRect(sf::IntRect(0, 0, frameSize.x, frameSize.y));
+            tempGraffiti.setScale(scale, scale);
+            tempGraffiti.setPosition(0.f, 0.f);
+
+            sf::FloatRect graffitiBounds = tempGraffiti.getGlobalBounds();
+            float spriteW = graffitiBounds.width;
+            float spriteH = graffitiBounds.height;
+
+
+            /*float minX = sz.rect.left;
+            float minY = sz.rect.top;
+            float maxX = sz.rect.left + sz.rect.width - spriteW;
+            float maxY = sz.rect.top + sz.rect.height - spriteH;
+
+            std::cout << "[SPAWN] minX=" << minX << " maxX=" << maxX << " minY=" << minY << " maxY=" << maxY << std::endl;
+
+            if (maxX < minX || maxY < minY)
+                continue;*/
+
+            float rx = sz.rect.left + sz.rect.width / 2.f - spriteW / 2.f;
+            float ry = sz.rect.top + sz.rect.height / 2.f - spriteH / 2.f;
+
+
+            /*float rx = minX + (std::rand() / float(RAND_MAX)) * (maxX - minX);
+            float ry = minY + (std::rand() / float(RAND_MAX)) * (maxY - minY);*/
+
+
+
+
+            tempGraffiti.setPosition(rx, ry);
+            auto newBounds = tempGraffiti.getGlobalBounds();
+
+            bool overlap = false;
+            for (auto& inc : mIncidents) {
+                if (!inc->isResolved()) {
+                    if (auto gi = dynamic_cast<GraffitiIncident*>(inc.get())) {
+                        if (gi->getGraffitiBounds().intersects(newBounds)) { overlap = true; break; }
+                    }
+                }
+            }
+            if (overlap) continue;
+
+        
+            // 4. Создать GraffitiIncident
+            mIncidents.emplace_back(std::make_unique<GraffitiIncident>(
+                sf::Vector2f(rx, ry),
+                *graffitiTex,              // <-- ВАЖНО: сюда передаёшь нужную текстуру
+                mQuestionSheetTexture,
+                frameCount,
+                frameSize,
+                frameDuration
+            ));
+            return true;
+            }
+
 
     }
 

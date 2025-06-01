@@ -33,7 +33,6 @@ public:
         return { ms.x * ts.x, ms.y * ts.y };
     }
     sf::IntRect getPlayableArea() const {
-        // Например, захардкодить или вычислить по данным JSON-карты:
         return sf::IntRect(0, 0,   // смещение
             1280, 960); // ширина и высота области
     }
@@ -67,10 +66,14 @@ private:
     std::unordered_map<std::string, sf::Texture> mCarFrontTextures;
     sf::Texture                                  mQuestionTexture;
 
+    sf::Texture mGraffitiLeftTexture;
+    sf::Texture mGraffitiRightTexture;
+
+
     // Параметры спавна
-    std::size_t mMaxIncidents = 5;          // по умолчанию до 5
-    float       mSpawnInterval = 3.f;        // раз в 3 секунды
-    float       mTimeSinceLast = 0.f;        // накопление времени
+    std::size_t mMaxIncidents = 10;
+    float       mSpawnInterval = 3.f;
+    float       mTimeSinceLast = 0.f; 
 
     // Вспомогательная
     static std::string pickColor(const std::string& desired,
@@ -79,16 +82,16 @@ private:
 
     // QTE
     struct QTEState {
-        std::vector<sf::Keyboard::Key> sequence; // последовательность
-        size_t currentIndex = 0;                 // какой сейчас ждём
-        int attempt = 0;                         // номер попытки (0...2)
-        bool active = false;                     // показывать ли QTE сейчас
-        int scorePerAttempt[3] = { 10, 7, 4 };     // очки за каждую попытку
+        std::vector<sf::Keyboard::Key> sequence;
+        size_t currentIndex = 0;
+        int attempt = 0;
+        bool active = false;
+        int scorePerAttempt[3] = { 10, 7, 4 };
     };
     QTEState mQTE;
 
 public:
-    const Map& getMap() const { return mMap; }             // чтобы mLogic.getMap() работал
+    const Map& getMap() const { return mMap; }
     int   getScore() const { return mScore; }
     int   getActiveIncidents() const { return static_cast<int>(mIncidents.size()); }
     float getElapsedSeconds() const { return mElapsedTime; }

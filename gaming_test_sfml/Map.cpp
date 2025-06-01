@@ -23,6 +23,8 @@ bool Map::loadFromJSON(const std::string& jsonPath)
     nlohmann::json j;
     in >> j;
 
+
+
     // 2) Читаем размеры
     unsigned W = j.at("width").get<unsigned>();
     unsigned H = j.at("height").get<unsigned>();
@@ -118,9 +120,22 @@ bool Map::loadFromJSON(const std::string& jsonPath)
             continue;
 
         for (auto& obj : layer.at("objects")) {
-            // отфильтруем только прямоугольники
-            if (!obj.contains("width") || !obj.contains("height"))
-                continue;
+            // только объекты с incidentType!
+            std::string incidentType = "";
+            std::string orientation = "";
+            std::string color = "red";
+
+            if (obj.contains("properties")) {
+                for (auto& prop : obj.at("properties")) {
+                    auto name = prop.at("name").get<std::string>();
+                    auto val = prop.at("value").get<std::string>();
+                    if (name == "incidentType") incidentType = val;
+                    if (name == "orientation")  orientation = val;
+                    if (name == "color")        color = val;
+                }
+            }
+            // пропускаем объекты без incidentType!
+            if (incidentType.empty()) continue;
 
             SpawnZone sz;
             sz.rect.left = obj.at("x").get<float>();
@@ -128,22 +143,14 @@ bool Map::loadFromJSON(const std::string& jsonPath)
             sz.rect.width = obj.at("width").get<float>();
             sz.rect.height = obj.at("height").get<float>();
 
-            // дефолты:
-            sz.orientation = "side";
-            sz.color = "red";
+            sz.incidentType = incidentType;
+            sz.orientation = orientation;
+            sz.color = color;
 
-            if (obj.contains("properties")) {
-                for (auto& prop : obj.at("properties")) {
-                    auto name = prop.at("name").get<std::string>();
-                    auto val = prop.at("value").get<std::string>();
-                    if (name == "orientation") sz.orientation = val;
-                    if (name == "color")       sz.color = val;
-                    if (name == "incidentType") sz.incidentType = val;
-                }
-            }
             mSpawnZones.push_back(std::move(sz));
         }
-    } 
+    }
+
 
     // обработка fightzones
 

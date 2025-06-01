@@ -147,6 +147,7 @@ sfml-system.lib
     <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="GameRenderer.cpp" />
     <ClCompile Include="gaming_test_sfml.cpp" />
+    <ClCompile Include="GraffitiIncident.cpp" />
     <ClCompile Include="HighScoresManager.cpp" />
     <ClCompile Include="IncidentManager.cpp" />
     <ClCompile Include="Map.cpp" />
@@ -162,6 +163,7 @@ sfml-system.lib
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameLogic.h" />
     <ClInclude Include="GameRenderer.h" />
+    <ClInclude Include="GraffitiIncident.h" />
     <ClInclude Include="HighScoresManager.h" />
     <ClInclude Include="Incident.h" />
     <ClInclude Include="IncidentManager.h" />
