@@ -56,8 +56,55 @@ void GameLogic::handleInput(sf::Keyboard::Key key, bool isPressed)
 
     // Если в мини-игре — по E выходим
     if (mInInteraction && mQTE.active) {
-        // Если правильная клавиша
-        if (isPressed && key == mQTE.sequence[mQTE.currentIndex]) {
+        if (!isPressed) return;  // Only handle key press events
+
+        if (mQTE.isFightQTE) {
+            // For fight QTE, check if the pressed key matches the expected key
+            // and if it's within the perfect timing window
+            if (key == mQTE.expectedKey) {
+                float normalizedTime = mQTE.circleTimer / mQTE.circleMaxTime;
+                float timeDiff = std::abs(normalizedTime - mQTE.perfectZonePosition);
+
+                if (timeDiff <= mQTE.perfectTimeWindow) {
+                    // Perfect timing!
+                    if (mCurrentViolation) mCurrentViolation->resolve();
+                    mScore += mQTE.scorePerAttempt[mQTE.attempt];
+                    mInInteraction = false;
+                    mQTE.active = false;
+                    mCurrentViolation = nullptr;
+                }
+                else {
+                    // Bad timing
+                    mQTE.attempt++;
+                    if (mQTE.attempt >= 3) {
+                        if (mCurrentViolation) mCurrentViolation->resolve();
+                        mInInteraction = false;
+                        mQTE.active = false;
+                        mCurrentViolation = nullptr;
+                    }
+                    else {
+                        startQTE(false);
+                    }
+                }
+            }
+            else {
+                // Wrong key
+                mQTE.attempt++;
+                if (mQTE.attempt >= 3) {
+                    if (mCurrentViolation) mCurrentViolation->resolve();
+                    mInInteraction = false;
+                    mQTE.active = false;
+                    mCurrentViolation = nullptr;
+                }
+                else {
+                    startQTE(false);
+                }
+            }
+            return;
+        }
+
+        // Regular QTE sequence logic
+        if (key == mQTE.sequence[mQTE.currentIndex]) {
             mQTE.currentIndex++;
             if (mQTE.currentIndex >= mQTE.sequence.size()) {
                 // Успех!
@@ -133,6 +180,26 @@ void GameLogic::handleInput(sf::Keyboard::Key key, bool isPressed)
 
 void GameLogic::update(sf::Time dt)
 {
+    if (mPaused) return;
+
+    // Update QTE circle timer if active
+    if (mInInteraction && mQTE.active && mQTE.isFightQTE) {
+        mQTE.circleTimer += dt.asSeconds();
+        if (mQTE.circleTimer >= mQTE.circleMaxTime) {
+            // Time's up - count as a failed attempt
+            mQTE.attempt++;
+            if (mQTE.attempt >= 3) {
+                if (mCurrentViolation) mCurrentViolation->resolve();
+                mInInteraction = false;
+                mQTE.active = false;
+                mCurrentViolation = nullptr;
+            }
+            else {
+                startQTE(false);
+            }
+        }
+    }
+
     mElapsedTime += dt.asSeconds();
 
     if (mPaused || mInInteraction) return;
@@ -461,6 +528,25 @@ void GameLogic::startQTE(bool resetAttempt) {
     mQTE.currentIndex = 0;
     if (resetAttempt) mQTE.attempt = 0;
     mQTE.active = true;
+
+
+    // Check if this is a fight incident
+    if (auto* fightIncident = dynamic_cast<FightIncident*>(mCurrentViolation)) {
+        mQTE.isFightQTE = true;
+        mQTE.circleTimer = 0.f;
+
+        // Set random position for perfect zone (avoiding edges of circle)
+        mQTE.perfectZonePosition = 0.2f + (static_cast<float>(rand()) / RAND_MAX) * 0.6f;
+
+        // Choose a random key for the fight QTE
+        static std::vector<sf::Keyboard::Key> possible = {
+            sf::Keyboard::W, sf::Keyboard::A, sf::Keyboard::S, sf::Keyboard::D
+        };
+        mQTE.expectedKey = possible[rand() % possible.size()];
+        return;
+    }
+
+    mQTE.isFightQTE = false;
 
     static std::vector<sf::Keyboard::Key> possible = {
         sf::Keyboard::W, sf::Keyboard::A, sf::Keyboard::S, sf::Keyboard::D, sf::Keyboard::E, sf::Keyboard::Q

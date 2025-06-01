@@ -87,6 +87,14 @@ private:
         int attempt = 0;
         bool active = false;
         int scorePerAttempt[3] = { 10, 7, 4 };
+
+        // Fight QTE specific
+        bool isFightQTE = false;
+        float circleTimer = 0.f;
+        float circleMaxTime = 2.f;  // Time in seconds for the circle to complete
+        float perfectTimeWindow = 0.13f;  // Time window for perfect timing (reduced from 0.2)
+        float perfectZonePosition = 0.5f;  // Position of the perfect zone (0.0 to 1.0)
+        sf::Keyboard::Key expectedKey;  // The key that should be pressed
     };
     QTEState mQTE;
 
@@ -106,4 +114,5 @@ public:
     const std::vector<sf::Keyboard::Key>& getQTESequence() const { return mQTE.sequence; }
     size_t getQTECurrentIndex() const { return mQTE.currentIndex; }
     int getQTEAttempt() const { return mQTE.attempt; }
+    const QTEState& getQTE() const { return mQTE; }
 };

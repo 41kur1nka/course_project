@@ -12,6 +12,8 @@ Player 10
 Player 10
 Player 10
 Player 10
+Player 10
+Player 0
 Player 0
 Player 0
 Player 0
