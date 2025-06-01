@@ -17,10 +17,17 @@ public:
     // Получить топ-N
     std::vector<std::pair<std::string, int>> getTop(int n = 10) const;
 
-    // Получить ВСЕ (для будущего онлайна: это будут get/set с сервера)
     const std::vector<std::pair<std::string, int>>& getAll() const { return mScores; }
+
+    // работа с онлайн таблицой
+    void sendScoreOnline(const std::string& name, int score);
+
+    std::vector<std::pair<std::string, int>> getScoresOnline();
 
 private:
     std::string mFilename;
     std::vector<std::pair<std::string, int>> mScores;
+
+    const std::string JSONBIN_BIN_ID = "683c96218a456b7966a822fb";
+    const std::string JSONBIN_API_KEY = "$2a$10$6vJGt4xm./2k86V8dSn9k.byyRPOExZO9Niqipr3P9cTtPXSRuf5C";
 };

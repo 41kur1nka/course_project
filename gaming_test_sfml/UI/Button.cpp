@@ -19,6 +19,7 @@ void Button::update(const sf::RenderWindow& window)
     sf::Vector2i mouse = sf::Mouse::getPosition(window);
     bool contains = mSprite.getGlobalBounds().contains((sf::Vector2f)mouse);
 
+
     // Выбираем состояние
     if (contains) {
         if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
@@ -27,8 +28,7 @@ void Button::update(const sf::RenderWindow& window)
         }
         else {
             if (mWasPressed) {
-                // клик завершён над кнопкой
-                mOnClick();
+                if (mOnClick) mOnClick();
             }
             mState = State::Hover;
             mWasPressed = false;

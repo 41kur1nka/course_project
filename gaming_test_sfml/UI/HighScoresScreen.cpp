@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <sstream>
 #include "HighScoresScreen.h"
+#include <iostream>
 
 HighScoresScreen::HighScoresScreen(GameState& stateRef, HighScoresManager& manager)
     : mState(stateRef), mScores(manager),
@@ -36,8 +37,14 @@ void HighScoresScreen::loadAssets(const sf::RenderWindow& window)
     mBackButton = std::make_unique<Button>(
         mBtnNorm, mBtnHover, mBtnDown,
         sf::Vector2f(btnX, btnY),
-        [&]() { mState = GameState::MainMenu; }
+        [this]() { mState = GameState::MainMenu; }
     );
+}
+
+void HighScoresScreen::loadScoresOnline()
+{
+    mCachedScores = mScores.getScoresOnline();
+    mScoresLoaded = true;
 }
 
 
@@ -52,18 +59,19 @@ void HighScoresScreen::draw(sf::RenderTarget& target)
 {
     target.draw(mTitleText);
 
-    // Показываем топ-10 (или меньше)
-    auto top = mScores.getTop();
-    float x = 160.f, y = 120.f;
-    for (size_t i = 0; i < top.size() && i < 10; ++i) {
-        std::ostringstream oss;
-        oss << i + 1 << ". " << top[i].first << "  " << top[i].second;
-        mEntryText.setString(oss.str());
-        mEntryText.setPosition(x, y);
-        target.draw(mEntryText);
-        y += 32.f;
+    // Рисуем только если mScoresLoaded!
+    float y = 150.f;
+    for (size_t i = 0; i < mCachedScores.size() && i < 10; ++i) {
+        sf::Text text;
+        text.setFont(mFont);
+        text.setString(mCachedScores[i].first + ": " + std::to_string(mCachedScores[i].second));
+        text.setCharacterSize(28);
+        text.setFillColor(sf::Color::White);
+        text.setPosition(120.f, y);
+        target.draw(text);
+        y += 40.f;
     }
 
     if (mBackButton) mBackButton->draw(target);
-
 }
+

@@ -12,8 +12,10 @@ public:
     HighScoresScreen(GameState& stateRef, HighScoresManager& manager);
 
     void loadAssets(const sf::RenderWindow& window);
+    void loadScoresOnline();
     void update(const sf::RenderWindow& window);
     void draw(sf::RenderTarget& target);
+    
 
 private:
     GameState& mState;
@@ -25,4 +27,6 @@ private:
     sf::Texture mBtnNorm, mBtnHover, mBtnDown;
     std::unique_ptr<Button> mBackButton;
 
+    std::vector<std::pair<std::string, int>> mCachedScores;
+    bool mScoresLoaded = false;
 };

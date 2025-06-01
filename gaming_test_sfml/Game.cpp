@@ -46,6 +46,7 @@ void Game::resetLogic() {
     mRenderer = std::make_unique<GameRenderer>(mWindow, *mLogic);
     mPauseScreen = std::make_unique<PauseScreen>(mState, mScoresManager, *mLogic);
     mPauseScreen->loadAssets(mWindow);
+    mPauseScreen->loadAssets(mWindow);
 }
 
 
@@ -78,13 +79,16 @@ void Game::processInput()
                 e.mouseButton.button == sf::Mouse::Left)
             {
                 mPauseScreen->update(mWindow);
+                std::string playerName = "Artem"; // или запрашивай у игрока!
+                int playerScore = mLogic->getScore(); // если у тебя есть getScore()
+                mScoresManager.sendScoreOnline(playerName, playerScore);
             }
             break;
 
         
         case GameState::HighScores:
-            if (e.type == sf::Event::MouseButtonReleased && e.mouseButton.button == sf::Mouse::Left)
-                mScoresScreen.update(mWindow);
+            /*if (e.type == sf::Event::MouseButtonReleased && e.mouseButton.button == sf::Mouse::Left)
+                mScoresScreen.update(mWindow);*/
             break;
 
         case GameState::Settings:
@@ -96,6 +100,7 @@ void Game::processInput()
 
 void Game::update(sf::Time dt)
 {
+    static bool wasInScores = false;
     if (mState == GameState::MainMenu ) {
         // Обновляем кнопки каждый кадр:
         mMainMenu.update(mWindow);
@@ -110,10 +115,15 @@ void Game::update(sf::Time dt)
         return;
     }
     if (mState == GameState::HighScores) {
+        
+        if (!wasInScores) {
+            mScoresScreen.loadScoresOnline();
+            wasInScores = true;
+        }
         mScoresScreen.update(mWindow);
         return;
     }
-    // для остальных состояний — пока без логики
+    else { wasInScores = false; }
 }
 
 void Game::render()
