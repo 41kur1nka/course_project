@@ -338,10 +338,10 @@ bool GameLogic::spawnOne()
             if (overlap) continue;
 
             float frameDuration = 0.1f;
-
             mIncidents.emplace_back(std::make_unique<FightIncident>(
                 sf::Vector2f(rx, ry),
                 mFightSheetTexture,
+                mQuestionSheetTexture,
                 frameCount,
                 frameSize,
                 frameDuration
