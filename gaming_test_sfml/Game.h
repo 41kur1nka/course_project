@@ -6,6 +6,8 @@
 #include "GameLogic.h"
 #include "GameRenderer.h"
 #include "HighScoresManager.h"
+#include "PlayerSettings.h"
+
 
 enum class GameState {
     MainMenu,
@@ -18,6 +20,7 @@ enum class GameState {
 #include "UI/MainMenuScreen.h"
 #include "UI/PauseScreen.h"
 #include "UI/HighScoresScreen.h"
+#include "UI/SettingsScreen.h"
 
 class Game {
 public:
@@ -42,5 +45,10 @@ private:
     //Score screen
     HighScoresManager mScoresManager;
     HighScoresScreen  mScoresScreen;
+
+    //Settings screen
+    PlayerSettings mSettings;
+    SettingsScreen mSettingsScreen;
+
 
 };

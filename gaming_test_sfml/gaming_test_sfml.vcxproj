@@ -153,10 +153,13 @@ sfml-system.lib
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="ParkingViolation.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerSettings.cpp" />
+    <ClCompile Include="PlayerSettings.h" />
     <ClCompile Include="UI\Button.cpp" />
     <ClCompile Include="UI\HighScoresScreen.cpp" />
     <ClCompile Include="UI\MainMenuScreen.cpp" />
     <ClCompile Include="UI\PauseScreen.cpp" />
+    <ClCompile Include="UI\SettingsScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FightIncident.h" />
@@ -174,6 +177,7 @@ sfml-system.lib
     <ClInclude Include="UI\HighScoresScreen.h" />
     <ClInclude Include="UI\MainMenuScreen.h" />
     <ClInclude Include="UI\PauseScreen.h" />
+    <ClInclude Include="UI\SettingsScreen.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

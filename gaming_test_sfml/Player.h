@@ -23,12 +23,20 @@ public:
 	sf::Vector2f computeMovement(sf::Time deltaTime);
 	void move(const sf::Vector2f& movement);
 	sf::FloatRect getBounds() const;
+	void setSkin(int skinIndex);
+
 
 private:
 	Sprite mSprite;
-	Texture mRightTexture;
-	Texture mLeftTexture;
+	sf::Texture mRightTexture, mLeftTexture;
+	sf::Texture mRightTexture2, mLeftTexture2; // Второй скин
+	sf::Texture mRightTexture3, mLeftTexture3; // Третий скин
+	int mSkinIndex = 0;
 	IntRect mFrameRect;
+	const sf::Texture* mRightTextureToUse = nullptr;
+	const sf::Texture* mLeftTextureToUse = nullptr;
+
+
 
 	float mSpeed;
 	bool mIsMovingUp = false;

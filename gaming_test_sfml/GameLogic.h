@@ -33,8 +33,8 @@ public:
         return { ms.x * ts.x, ms.y * ts.y };
     }
     sf::IntRect getPlayableArea() const {
-        return sf::IntRect(0, 0,   // смещение
-            1280, 960); // ширина и высота области
+        return sf::IntRect(0, 0,   // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+            1280, 960); // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     }
     void startInteraction();
     void finishInteraction(bool ok);
@@ -50,14 +50,14 @@ private:
 
     std::vector<std::unique_ptr<Incident>> mIncidents;
 
-    int   mScore = 0;    // текущий счёт
-    float mElapsedTime = 0.f;  // прошедшее время в секундах
+    int   mScore = 0;    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+    float mElapsedTime = 0.f;  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
     Incident* mCurrentViolation = nullptr;
     bool                mPaused = false;
     bool                mInInteraction = false;
 
-    // текстуры для инцидентов
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     sf::Texture mCarTexture;
     sf::Texture mQuestionSheetTexture;
     sf::Texture mFightSheetTexture;
@@ -70,12 +70,12 @@ private:
     sf::Texture mGraffitiRightTexture;
 
 
-    // Параметры спавна
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     std::size_t mMaxIncidents = 10;
     float       mSpawnInterval = 3.f;
     float       mTimeSinceLast = 0.f; 
 
-    // Вспомогательная
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     static std::string pickColor(const std::string& desired,
         const std::unordered_map<std::string, sf::Texture>& dict);
 

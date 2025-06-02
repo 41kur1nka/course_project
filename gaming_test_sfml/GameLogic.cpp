@@ -9,7 +9,6 @@
 #include <iostream>
 
 
-
 GameLogic::GameLogic()
 {
     // 1) Загрузить карту из JSON + тайлсета
@@ -21,6 +20,8 @@ GameLogic::GameLogic()
     sf::Vector2u mapPx = { mMap.getMapSize().x * mMap.getTileSize().x,
                            mMap.getMapSize().y * mMap.getTileSize().y };
     mPlayer.setPosition({ float(mapPx.x) / 2.f, float(mapPx.y) / 2.f });
+
+
 
     // 3) (опционально) задать стартовый спавн-интервал и т. д.
     // пример спавна одной неправильно припаркованной машины

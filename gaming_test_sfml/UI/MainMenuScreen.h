@@ -10,16 +10,16 @@ class Game; // Forward declaration
 
 class MainMenuScreen {
 public:
-	// stateRef — ссылка на переменную в Game, чтобы менять её при кликах
+	// stateRef пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ Game, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	explicit MainMenuScreen(GameState& stateRef, Game& gameRef);
 
-	// Загрузить все ассеты (текстуры кнопок и фон)
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ)
 	void loadAssets(const sf::RenderWindow& window);
 
-	// Обновить (проверить кнопки)
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ)
 	void update(const sf::RenderWindow& window);
 
-	// Отрисовать
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	void draw(sf::RenderTarget& target);
 
 private:

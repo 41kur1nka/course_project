@@ -7,7 +7,7 @@
 #include <iostream>
 
 Game::Game()
-    : mLogic(std::make_unique<GameLogic>())  // используем GameLogic::GameLogic(), он сам загружает map.json
+    : mLogic(std::make_unique<GameLogic>())  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ GameLogic::GameLogic(), пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ map.json
     , mWindow(
         sf::VideoMode(
             mLogic->getMapSize().x* mLogic->getTileSize().x,
@@ -22,12 +22,15 @@ Game::Game()
     , mPauseScreen(std::make_unique<PauseScreen>(mState, mScoresManager, *mLogic))
     , mScoresManager("scores.txt")
     , mScoresScreen(mState, mScoresManager)
+    , mSettingsScreen(mState, mSettings)
 
 {
-    // здесь можно ещё настроить иконку окна, инициализировать рандом и т.п.
+    // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅ.пїЅ.
     mMainMenu.loadAssets(mWindow);
     mPauseScreen->loadAssets(mWindow);
     mScoresScreen.loadAssets(mWindow);
+    mSettings.load();
+    mSettingsScreen.loadAssets(mWindow);
     std::srand(unsigned(std::time(nullptr)));
 }
 
@@ -79,9 +82,18 @@ void Game::processInput()
                 e.mouseButton.button == sf::Mouse::Left)
             {
                 mPauseScreen->update(mWindow);
-                std::string playerName = "Artem"; // или запрашивай у игрока!
-                int playerScore = mLogic->getScore(); // если у тебя есть getScore()
-                mScoresManager.sendScoreOnline(playerName, playerScore);
+                
+                int playerScore = mLogic->getScore();
+
+                auto trim = [](std::string s) {
+                    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) { return !std::isspace(ch); }));
+                    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), s.end());
+                    return s;
+                    };
+                std::string safeName = trim(mSettings.name);
+                if (safeName.empty()) safeName = "Player";
+                std::cout << "Sending score for: " << mSettings.name << " value: " << playerScore << std::endl;
+                mScoresManager.sendScoreOnline(mSettings.name, playerScore);
             }
             break;
 
@@ -92,7 +104,7 @@ void Game::processInput()
             break;
 
         case GameState::Settings:
-            // TODO: добавим позже обработку меню
+            mSettingsScreen.update(mWindow, e);
             break;
         }
     }
@@ -102,12 +114,13 @@ void Game::update(sf::Time dt)
 {
     static bool wasInScores = false;
     if (mState == GameState::MainMenu ) {
-        // Обновляем кнопки каждый кадр:
+        
         mMainMenu.update(mWindow);
-        // и сразу выходим — логики геймплея тут нет
+        
         return;
     }
     if (mState == GameState::Playing) {
+        mLogic->getPlayer().setSkin(mSettings.skinIndex);
         mLogic->update(dt);
     }
     if (mState == GameState::Paused) {
@@ -159,7 +172,12 @@ void Game::render()
         mScoresScreen.draw(mWindow);
         mWindow.display();
         break;
-        //TODO : settings
+
+    case GameState::Settings:
+        mSettingsScreen.draw(mWindow);
+        mWindow.display();
+        break;
+
     default:
         break;
     }

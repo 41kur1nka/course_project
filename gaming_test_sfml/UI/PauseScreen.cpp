@@ -11,7 +11,7 @@ PauseScreen::PauseScreen(GameState& stateRef, HighScoresManager& scoresManager, 
 
 void PauseScreen::loadAssets(const sf::RenderWindow& window)
 {
-    // Замените пути к ассетам на ваши!
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ!
     if (!mResumeNorm.loadFromFile("assets/ui/btn_resume_norm.png") ||
         !mResumeHover.loadFromFile("assets/ui/btn_resume_hover.png") ||
         !mResumeDown.loadFromFile("assets/ui/btn_resume_down.png"))

@@ -2,31 +2,43 @@
 
 #include <SFML/Graphics.hpp>
 #include <functional>
+#include <string>
 
 class Button {
 public:
-    // texNormal, texHover, texPressed — три состояния кнопки
-    // position — верхний-левый угол кнопки
-    // onClick    — вызывается при отпускании ЛКМ над кнопкой
+    // texNormal, texHover, texPressed - С‚РµРєСЃС‚СѓСЂС‹ РєРЅРѕРїРєРё
+    // position - РїРѕР·РёС†РёСЏ-Р»РµРІС‹Р№ РІРµСЂС… РєРЅРѕРїРєРё
+    // onClick    - РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ РїСЂРё РЅР°Р¶Р°С‚РёРё РЅР° РєРЅРѕРїРєСѓ
     Button(const sf::Texture& texNormal,
         const sf::Texture& texHover,
         const sf::Texture& texPressed,
         const sf::Vector2f& position,
         std::function<void()> onClick);
 
-    // Обновить состояние (hover, pressed) и вызвать onClick, если надо
+ /*   ~Button() {
+        mOnClick = nullptr;
+    }*/
+
+    // РџСЂРѕРІРµСЂРєР° СЃРѕСЃС‚РѕСЏРЅРёСЏ (hover, pressed) Рё РІС‹Р·РѕРІ onClick, РµСЃР»Рё РЅР°РґРѕ
     void update(const sf::RenderWindow& window);
 
-    // Нарисовать кнопку
+    // РћС‚СЂРёСЃРѕРІРєР° РєРЅРѕРїРєРё
     void draw(sf::RenderTarget& target) const;
+
+    // РЈСЃС‚Р°РЅРѕРІРєР° С‚РµРєСЃС‚Р° РєРЅРѕРїРєРё
+    void setText(const std::string& text, const sf::Font& font, unsigned int characterSize = 20);
 
 private:
     enum class State { Normal, Hover, Pressed };
     State                   mState = State::Normal;
-    sf::Sprite              mSprite;
-    const sf::Texture& mTexN;
-    const sf::Texture& mTexH;
-    const sf::Texture& mTexP;
-    std::function<void()>   mOnClick;
-    bool                    mWasPressed = false;
+    sf::Sprite             mSprite;
+    const sf::Texture&     mTexN;
+    const sf::Texture&     mTexH;
+    const sf::Texture&     mTexP;
+    std::function<void()>  mOnClick;
+    bool                   mWasPressed = false;
+
+    // РўРµРєСЃС‚ РєРЅРѕРїРєРё
+    sf::Text              mText;
+    void                  updateTextPosition();
 };

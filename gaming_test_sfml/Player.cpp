@@ -16,6 +16,22 @@ mElapsedTime(sf::Time::Zero)
 	if (!mLeftTexture.loadFromFile("assets/images/left_walk.png")) {
 		std::cout << "Error to load spritesheet" << std::endl;
 	}
+	if (!mRightTexture2.loadFromFile("assets/images/right_walk2.png")) {
+		std::cout << "Error to load right_walk2" << std::endl;
+	}
+	if (!mLeftTexture2.loadFromFile("assets/images/left_walk2.png")) {
+		std::cout << "Error to load left_walk2" << std::endl;
+	}
+	if (!mRightTexture3.loadFromFile("assets/images/right_walk3.png")) {
+		std::cout << "Error to load right_walk3" << std::endl;
+	}
+	if (!mLeftTexture3.loadFromFile("assets/images/left_walk3.png")) {
+		std::cout << "Error to load left_walk3" << std::endl;
+	}
+
+	mRightTextureToUse = &mRightTexture;
+	mLeftTextureToUse = &mLeftTexture;
+
 	mSprite.setTexture(mRightTexture);
 
 	//Спрайтлист состоит из горизональных  кадров
@@ -98,6 +114,39 @@ sf::FloatRect Player::getBounds() const
 	return mSprite.getGlobalBounds();
 }
 
+void Player::setSkin(int skinIndex)
+{
+	if (skinIndex < 0 || skinIndex > 2) {
+		std::cout << "!!! BAD SKIN INDEX: " << skinIndex << std::endl;
+		skinIndex = 0;
+	}
+	
+	mSkinIndex = skinIndex; // Запоминаем выбранный скин
+	// Теперь выберем нужный спрайт
+	switch (mSkinIndex) {
+	case 0:
+		mRightTextureToUse = &mRightTexture;
+		mLeftTextureToUse = &mLeftTexture;
+		break;
+	case 1:
+		mRightTextureToUse = &mRightTexture2;
+		mLeftTextureToUse = &mLeftTexture2;
+		break;
+	case 2:
+		mRightTextureToUse = &mRightTexture3;
+		mLeftTextureToUse = &mLeftTexture3;
+		break;
+	default:
+		mRightTextureToUse = &mRightTexture;
+		mLeftTextureToUse = &mLeftTexture;
+		break;
+	}
+	if (mCurrentDirection == Direction::Left)
+		mSprite.setTexture(*mLeftTextureToUse);
+	else
+		mSprite.setTexture(*mRightTextureToUse);
+}
+
 void Player::updateAnimation(sf::Time deltaTime)
 {
 	mElapsedTime += deltaTime;
@@ -112,16 +161,18 @@ void Player::updateAnimation(sf::Time deltaTime)
 
 void Player::updateDirection()
 {
+	if (mSkinIndex < 0) mSkinIndex = 0;
+
 	if (mIsMovingLeft && !mIsMovingRight) {
 		if (mCurrentDirection != Direction::Left) {
 			mCurrentDirection = Direction::Left;
-			mSprite.setTexture(mLeftTexture);
+			mSprite.setTexture(*mLeftTextureToUse);
 		}
 	}
 	else if (mIsMovingRight && !mIsMovingLeft) {
 		if (mCurrentDirection != Direction::Right) {
 			mCurrentDirection = Direction::Right;
-			mSprite.setTexture(mRightTexture);
+			mSprite.setTexture(*mRightTextureToUse);
 		}
 	}
 }
