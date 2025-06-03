@@ -18,18 +18,16 @@ ParkingViolation::ParkingViolation(const sf::Vector2f &pos, const sf::Texture& c
 			frameSize.x, frameSize.y
 		);
 	}
-	// выставить первый кадр
+	// set first frame
 	mQuestion.setTextureRect(mFrames[0]);
 
-	// поставить центр вращени€ спрайта вопроса в его середину
+	// set sprite centre in sign centre
 	mQuestion.setOrigin(frameSize.x / 2.f, frameSize.y / 2.f);
 
-	// поставим Ђ?ї чуть выше крыши
 	mQuestion.setScale(1.5f, 1.5f);
 	auto carBounds = mCar.getGlobalBounds();
 	auto questionBounds = mQuestion.getLocalBounds();
 
-	// выравниваем У?Ф по центру крыши машины
 	float qx = carBounds.left + carBounds.width * 0.5f;
 	float qy = carBounds.top - questionBounds.height*0.25f - 14.f;
 
@@ -45,7 +43,7 @@ ParkingViolation::ParkingViolation(const sf::Vector2f &pos, const sf::Texture& c
 void ParkingViolation::update(const sf::Vector2f& playerPos, sf::Time dt, const sf::FloatRect& playerBounds)
 {
 	
-	if (mResolved) return; // уже убрали
+	if (mResolved) return;
 
 	mElapsedTime += dt.asSeconds();
 	if (mElapsedTime >= mFrameDuration) {
@@ -55,7 +53,7 @@ void ParkingViolation::update(const sf::Vector2f& playerPos, sf::Time dt, const 
 	}
 
 	sf::FloatRect carRect = mCar.getGlobalBounds();
-	float buffer = 8.f; // увеличь, если хочетс€ УширеФ зону
+	float buffer = 8.f;
 	carRect.left -= buffer;
 	carRect.top -= buffer;
 	carRect.width += 2 * buffer;
@@ -71,7 +69,7 @@ void ParkingViolation::render(sf::RenderTarget& target)
 	target.draw(mCar);
 	target.draw(mQuestion);
 
-	if (mPlayerNear && !mResolved) { // “олько если игрок р€дом и не решено!
+	if (mPlayerNear && !mResolved) {
 		sf::Text pressE;
 		pressE.setFont(mFont);
 		pressE.setString("Press E for interacting");
@@ -79,7 +77,7 @@ void ParkingViolation::render(sf::RenderTarget& target)
 		pressE.setFillColor(sf::Color::White);
 		pressE.setOutlineColor(sf::Color::Black);
 		pressE.setOutlineThickness(2.f);
-		//  оординаты Ч над машиной или над знаком "?"
+
 		float x = 1280 - 350;
 		float y = 960 - 60;
 		pressE.setPosition(x,y);

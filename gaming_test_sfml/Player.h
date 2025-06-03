@@ -29,8 +29,8 @@ public:
 private:
 	Sprite mSprite;
 	sf::Texture mRightTexture, mLeftTexture;
-	sf::Texture mRightTexture2, mLeftTexture2; // Второй скин
-	sf::Texture mRightTexture3, mLeftTexture3; // Третий скин
+	sf::Texture mRightTexture2, mLeftTexture2;
+	sf::Texture mRightTexture3, mLeftTexture3;
 	int mSkinIndex = 0;
 	IntRect mFrameRect;
 	const sf::Texture* mRightTextureToUse = nullptr;
@@ -44,12 +44,12 @@ private:
 	bool mIsMovingLeft = false;
 	bool mIsMovingRight = false;
 
-	int mFramecount = 12; // Кол-во кадров в анимации
-	int mCurrentFrame; // Номер текущего кадра
-	float mFrameWidth; // Ширина одного кадра
-	float mFrameHeight; // Высота одного кадра
-	Time mFrameDuration = seconds(0.15f); // Время отображения одного кадра
-	Time mElapsedTime; // Время, прошедшее с последней смены кадров
+	int mFramecount = 12;
+	int mCurrentFrame;
+	float mFrameWidth;
+	float mFrameHeight;
+	Time mFrameDuration = seconds(0.15f);
+	Time mElapsedTime;
 
 	void updateAnimation(sf::Time deltaTime);
 	void updateDirection();

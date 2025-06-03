@@ -14,12 +14,12 @@ HighScoresManager::HighScoresManager(const std::string& filename)
 }
 
 void HighScoresManager::load() {
-    // Сначала пробуем загрузить онлайн
+    // Trying to load online
     auto onlineScores = getScoresOnline();
     if (!onlineScores.empty()) {
         mScores = onlineScores;
     } else {
-        // Если не получилось - загружаем локально
+        // Loading local
         mScores.clear();
         std::ifstream in(mFilename);
         std::string name;
@@ -28,7 +28,7 @@ void HighScoresManager::load() {
             mScores.emplace_back(name, score);
         }
     }
-    // Сортировка по убыванию
+    // Sorting
     std::sort(mScores.begin(), mScores.end(), 
         [](const auto& a, const auto& b) { return a.second > b.second; });
 }
@@ -46,12 +46,12 @@ void HighScoresManager::addScore(const std::string& name, int score) {
     std::sort(mScores.begin(), mScores.end(),
         [](const auto& a, const auto& b) { return a.second > b.second; });
     save();
-    // Отправляем очки онлайн
+    // Send score online
     sendScoreOnline(name, score);
 
-    // После успешного онлайна — чистим локальный файл (или не записываем туда этот результат)
-    // Например, очищаем файл:
-    std::ofstream ofs(mFilename, std::ios::trunc); // очистить файл
+    // After successful online - clear local file
+    // Clear local file:
+    std::ofstream ofs(mFilename, std::ios::trunc);
 }
 
 std::vector<std::pair<std::string, int>> HighScoresManager::getTop(int n) const {
@@ -63,7 +63,7 @@ std::vector<std::pair<std::string, int>> HighScoresManager::getTop(int n) const 
 void HighScoresManager::sendScoreOnline(const std::string& name, int score)
 {
     try {
-        // 1. Получаем текущие результаты
+        // Getting current scores
         auto r = cpr::Get(
             cpr::Url{ "https://api.jsonbin.io/v3/b/" + JSONBIN_BIN_ID + "/latest" },
             cpr::Header{ {"X-Master-Key", JSONBIN_API_KEY} }
@@ -80,27 +80,27 @@ void HighScoresManager::sendScoreOnline(const std::string& name, int score)
             }
 
         } else {
-            scores = json::array(); // Создаем новый пустой массив
+            scores = json::array(); // Create blank array
         }
 
-        // 2. Добавляем новый результат
+        // Adding new res
         scores.push_back({
             {"name", name},
             {"score", score}
         });
 
-        // 3. Сортируем по убыванию очков
+        // Sorting in descending order
         std::sort(scores.begin(), scores.end(),
             [](const auto& a, const auto& b) {
                 return a["score"].get<int>() > b["score"].get<int>();
             });
 
-        // 4. Ограничиваем количество сохраняемых результатов
+        // Limiting the number of results saved
         if (scores.size() > 100) {
             scores.erase(scores.begin() + 100, scores.end());
         }
 
-        // 5. Обновляем Bin
+        // Update Bin
         json finalJson = { {"record", scores} };
         auto response = cpr::Put(
             cpr::Url{ "https://api.jsonbin.io/v3/b/" + JSONBIN_BIN_ID },
@@ -134,7 +134,6 @@ std::vector<std::pair<std::string, int>> HighScoresManager::getScoresOnline()
             try {
                 nlohmann::json doc = nlohmann::json::parse(r.text);
 
-                // Переходим внутрь doc["record"]["record"] если возможно
                 if (doc.contains("record") && doc["record"].contains("record") && doc["record"]["record"].is_array()) {
                     const auto& scores = doc["record"]["record"];
                     for (const auto& item : scores) {

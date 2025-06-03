@@ -30,7 +30,6 @@ private:
     std::vector<sf::Texture> mSkinTextures;
     std::unique_ptr<Button> mPrevSkinBtn, mNextSkinBtn, mSaveBtn, mBackBtn;
 
-    // Текстуры кнопок
     sf::Texture mTexN, mTexH, mTexP;
     sf::Texture mTeN, mTeH, mTeP;
     sf::Texture mTexPrev, mTexPrevH, mTexPrevP;

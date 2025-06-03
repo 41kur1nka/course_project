@@ -11,10 +11,9 @@ FightIncident::FightIncident(const sf::Vector2f& position, const sf::Texture& fi
 
     mAlert.setTexture(questionTex);
 
-    mAlertFrameCount = 15;                // для вопросика — 15 кадров!
+    mAlertFrameCount = 15;
     mAlertFrameDuration = 0.1f;
 
-     // Генерируем кадры для анимации
     for (unsigned i = 0; i < mFrameCount; ++i) {
         mFrames.emplace_back(
             i * frameSize.x, 0,
@@ -30,10 +29,8 @@ FightIncident::FightIncident(const sf::Vector2f& position, const sf::Texture& fi
     mAlert.setTextureRect(mAlertFrames[0]);
 
 
-    // поставить центр вращения спрайта вопроса в его середину
     mAlert.setOrigin(frameSize.x / 2.f, frameSize.y / 2.f);
 
-    // поставим «?» чуть выше крыши
     mAlert.setScale(1.5f, 1.5f);
 
     if (!mFont.loadFromFile("assets/fonts/Montserrat-Black.ttf")) {
@@ -57,7 +54,6 @@ void FightIncident::update(const sf::Vector2f& playerPos, sf::Time dt, const sf:
         mAlertElapsedTime = 0.f;
     }
 
-    // Проверка пересечения (аналогично ParkingViolation)
     sf::FloatRect fightRect = mFightSprite.getGlobalBounds();
 
     float buffer = 8.f;
@@ -80,10 +76,8 @@ void FightIncident::render(sf::RenderTarget& target)
     float alertW = mAlert.getGlobalBounds().width;
     float alertH = mAlert.getGlobalBounds().height;
 
-    float shiftX = 17.f; // сдвиг по X 
-    float shiftY = 0.f; // сдвиг по Y 
-
-    // Центр по X, чуть выше головы драки
+    float shiftX = 17.f;
+    float shiftY = 0.f;
 
     mAlert.setPosition(
         pos.x + spriteW / 2.f - alertW / 2.f + shiftX,
@@ -92,8 +86,8 @@ void FightIncident::render(sf::RenderTarget& target)
     target.draw(mAlert);
 
 
-    // подсказка "Нажмите E"
-    if (mPlayerNear && !mResolved) { // Только если игрок рядом и не решено!
+    // hint "Press E"
+    if (mPlayerNear && !mResolved) {
         sf::Text pressE;
         pressE.setFont(mFont);
         pressE.setString("Press E for interacting");
@@ -101,7 +95,7 @@ void FightIncident::render(sf::RenderTarget& target)
         pressE.setFillColor(sf::Color::White);
         pressE.setOutlineColor(sf::Color::Black);
         pressE.setOutlineThickness(2.f);
-        // Координаты — над машиной или над знаком "?"
+
         float x = 1280 - 350;
         float y = 960 - 60;
         pressE.setPosition(x, y);

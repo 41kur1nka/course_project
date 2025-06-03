@@ -5,11 +5,11 @@ class Incident {
 public:
 	virtual ~Incident() = default;
 
-	// Обновление логики инцидента
+	// Updating incident logic
 	virtual void update(const sf::Vector2f& playerPos, sf::Time dt, const sf::FloatRect& playerBounds) = 0;
-	// Отрисовка инцидента на экране
+	// Drawing incident on screen
 	virtual void render(sf::RenderTarget& target) = 0;
-	// Метод для опредедения, завершён ли инцедент
+	// Incident is complete function
 	virtual bool isResolved() const = 0;
 
 	virtual void resolve() = 0;

@@ -33,8 +33,7 @@ public:
         return { ms.x * ts.x, ms.y * ts.y };
     }
     sf::IntRect getPlayableArea() const {
-        return sf::IntRect(0, 0,   // ��������
-            1280, 960); // ������ � ������ �������
+        return sf::IntRect(0, 0,1280, 960);
     }
     void startInteraction();
     void finishInteraction(bool ok);
@@ -50,14 +49,13 @@ private:
 
     std::vector<std::unique_ptr<Incident>> mIncidents;
 
-    int   mScore = 0;    // ������� ����
-    float mElapsedTime = 0.f;  // ��������� ����� � ��������
+    int   mScore = 0;
+    float mElapsedTime = 0.f;
 
     Incident* mCurrentViolation = nullptr;
     bool                mPaused = false;
     bool                mInInteraction = false;
 
-    // �������� ��� ����������
     sf::Texture mCarTexture;
     sf::Texture mQuestionSheetTexture;
     sf::Texture mFightSheetTexture;
@@ -70,12 +68,10 @@ private:
     sf::Texture mGraffitiRightTexture;
 
 
-    // ��������� ������
     std::size_t mMaxIncidents = 10;
     float       mSpawnInterval = 3.f;
     float       mTimeSinceLast = 0.f; 
 
-    // ���������������
     static std::string pickColor(const std::string& desired,
         const std::unordered_map<std::string, sf::Texture>& dict);
 
@@ -91,10 +87,10 @@ private:
         // Fight QTE specific
         bool isFightQTE = false;
         float circleTimer = 0.f;
-        float circleMaxTime = 2.f;  // Time in seconds for the circle to complete
-        float perfectTimeWindow = 0.13f;  // Time window for perfect timing (reduced from 0.2)
-        float perfectZonePosition = 0.5f;  // Position of the perfect zone (0.0 to 1.0)
-        sf::Keyboard::Key expectedKey;  // The key that should be pressed
+        float circleMaxTime = 2.f;
+        float perfectTimeWindow = 0.13f;
+        float perfectZonePosition = 0.5f;
+        sf::Keyboard::Key expectedKey;
     };
     QTEState mQTE;
 

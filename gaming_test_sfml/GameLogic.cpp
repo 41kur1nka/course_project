@@ -11,20 +11,15 @@
 
 GameLogic::GameLogic()
 {
-    // 1) Загрузить карту из JSON + тайлсета
+    // 1) Load map form JSON + tileset
     if (!mMap.loadFromJSON("assets/images/map.json"))
         throw std::runtime_error("Map load failed in GameLogic");
 
-    // 2) Поставить игрока в стартовую позицию
-    //    Пример: в центре экрана или на заданных координатах
+    // 2) Place player in start position
     sf::Vector2u mapPx = { mMap.getMapSize().x * mMap.getTileSize().x,
                            mMap.getMapSize().y * mMap.getTileSize().y };
     mPlayer.setPosition({ float(mapPx.x) / 2.f, float(mapPx.y) / 2.f });
 
-
-
-    // 3) (опционально) задать стартовый спавн-интервал и т. д.
-    // пример спавна одной неправильно припаркованной машины
     mQuestionSheetTexture.loadFromFile("assets/images/mark.png");
     
     mFightSheetTexture.loadFromFile("assets/images/fight/fight.png");
@@ -33,14 +28,13 @@ GameLogic::GameLogic()
     mGraffitiRightTexture.loadFromFile("assets/images/graffiti/graffiti_right.png");
 
 
-    // спавним нарушенную парковку 
     for (auto color : { "red","blue","green","white","yellow"}) {
         sf::Texture side;  side.loadFromFile("assets/images/cars/car_side_" + std::string(color) + ".png");
         sf::Texture front; front.loadFromFile("assets/images/cars/car_front_" + std::string(color) + ".png");
         mCarSideTextures[color] = std::move(side);
         mCarFrontTextures[color] = std::move(front);
     }
-    // Сколько машин хотим сразу в мире при старте
+
     const int initialCount = 0;
     for (int i = 0; i < initialCount; ++i) {
         spawnOne();
@@ -49,15 +43,15 @@ GameLogic::GameLogic()
 
 void GameLogic::handleInput(sf::Keyboard::Key key, bool isPressed)
 {
-    // Пауза
+    // Pause
     if (key == sf::Keyboard::Escape && isPressed) {
         togglePause();
         return;
     }
 
-    // Если в мини-игре — по E выходим
+    // Escape by pressing E if in pause
     if (mInInteraction && mQTE.active) {
-        if (!isPressed) return;  // Only handle key press events
+        if (!isPressed) return;
 
         if (mQTE.isFightQTE) {
             // For fight QTE, check if the pressed key matches the expected key
@@ -67,7 +61,7 @@ void GameLogic::handleInput(sf::Keyboard::Key key, bool isPressed)
                 float timeDiff = std::abs(normalizedTime - mQTE.perfectZonePosition);
 
                 if (timeDiff <= mQTE.perfectTimeWindow) {
-                    // Perfect timing!
+                    // Perfect timing
                     if (mCurrentViolation) mCurrentViolation->resolve();
                     mScore += mQTE.scorePerAttempt[mQTE.attempt];
                     mInInteraction = false;
@@ -108,7 +102,7 @@ void GameLogic::handleInput(sf::Keyboard::Key key, bool isPressed)
         if (key == mQTE.sequence[mQTE.currentIndex]) {
             mQTE.currentIndex++;
             if (mQTE.currentIndex >= mQTE.sequence.size()) {
-                // Успех!
+                // Success!
                 if (mCurrentViolation) mCurrentViolation->resolve();
                 mScore += mQTE.scorePerAttempt[mQTE.attempt];
                 mInInteraction = false;
@@ -118,14 +112,14 @@ void GameLogic::handleInput(sf::Keyboard::Key key, bool isPressed)
             return;
         }
 
-        // Только если нажата ЛЮБАЯ из разрешённых, но НЕ та!
+        // Only if pressed any key from allowing keys
         static std::vector<sf::Keyboard::Key> allowed = {
             sf::Keyboard::W, sf::Keyboard::A, sf::Keyboard::S,
             sf::Keyboard::D, sf::Keyboard::E, sf::Keyboard::Q
         };
         if (isPressed
             && std::find(allowed.begin(), allowed.end(), key) != allowed.end()
-            && key != mQTE.sequence[mQTE.currentIndex]) // <-- НЕ та буква!
+            && key != mQTE.sequence[mQTE.currentIndex])
         {
             mQTE.attempt++;
             if (mQTE.attempt >= 3) {
@@ -135,7 +129,7 @@ void GameLogic::handleInput(sf::Keyboard::Key key, bool isPressed)
                 mCurrentViolation = nullptr;
             }
             else {
-                // Начинаем новую последовательность, попытку НЕ сбрасываем!
+                // Starting new sequence, Начинаем новую последовательность, not reset attempt!
                 startQTE(false);
             }
             return;
@@ -143,7 +137,7 @@ void GameLogic::handleInput(sf::Keyboard::Key key, bool isPressed)
     }
 
 
-    // Нажали E рядом с машиной?
+    // If E pressed close to car
     if (key == sf::Keyboard::E && isPressed && !mPaused) {
         for (auto& inc : mIncidents) {
             if (auto pv = dynamic_cast<ParkingViolation*>(inc.get())) {
@@ -170,7 +164,7 @@ void GameLogic::handleInput(sf::Keyboard::Key key, bool isPressed)
         }
     }
 
-    // WASD – только если не в паузе и не в интеракции
+    // WASD – only if not in pause and not in iteration
     if (!mPaused && !mInInteraction) {
         if (key == sf::Keyboard::W) mPlayer.setMovingUp(isPressed);
         if (key == sf::Keyboard::S) mPlayer.setMovingDown(isPressed);
@@ -204,10 +198,10 @@ void GameLogic::update(sf::Time dt)
     mElapsedTime += dt.asSeconds();
 
     if (mPaused || mInInteraction) return;
-    // 1) Рассчитать желаемое смещение игрока
+
     sf::Vector2f desired = mPlayer.computeMovement(dt);
 
-    // 2) Коллизии: проверяем четыре угла «коробки» игрока
+    // 2) Collisions
     sf::FloatRect box = mPlayer.getBounds();
     sf::FloatRect next = box;
     next.left += desired.x;
@@ -225,7 +219,7 @@ void GameLogic::update(sf::Time dt)
         && canWalk(next.left, next.top + next.height - 1)
         && canWalk(next.left + next.width - 1, next.top + next.height - 1);
 
-    // 3) Коллизии с машинами
+    // 3) Collisions with cars
     if (ok) {
         for (auto& inc : mIncidents) {
             if (!inc->isResolved()) {
@@ -244,12 +238,12 @@ void GameLogic::update(sf::Time dt)
 
     mPlayer.update(dt);
 
-    // Обновляем инциденты
+    // Update incidents
     sf::Vector2f pp = getPlayerPosition();
     for (auto& inc : mIncidents)
         inc->update(pp, dt, mPlayer.getBounds());
 
-    // Удаляем решённые
+    // Delete completed
     mIncidents.erase(
         std::remove_if(mIncidents.begin(), mIncidents.end(),
             [](const std::unique_ptr<Incident>& i) { return i->isResolved(); }), mIncidents.end());
@@ -265,14 +259,14 @@ void GameLogic::update(sf::Time dt)
 
 void GameLogic::renderScene(sf::RenderWindow& window)
 {
-    // Сначала карта и всё, что на ней
+    // Map
     window.draw(mMap);
 
-    // Инциденты
+    // Incidents
     for (auto& inc : mIncidents)
         inc->render(window);
 
-    // Игрок
+    // Player
     mPlayer.render(window);
 }
 
@@ -291,7 +285,7 @@ void GameLogic::finishInteraction(bool ok)
     mCurrentViolation = nullptr;
     mInInteraction = false;
 
-    //сбрасываем флаги движения
+    //reset moving flags
     mPlayer.setMovingUp(false);
     mPlayer.setMovingDown(false);
     mPlayer.setMovingLeft(false);
@@ -300,51 +294,51 @@ void GameLogic::finishInteraction(bool ok)
 
 bool GameLogic::spawnOne()
 {
-    // Если уже достигли бюджета — выходим
+    // If maxIncidents then continue
     if (mIncidents.size() >= mMaxIncidents)
         return false;
 
-    // Берём случайную зону
+    // Taking random zone
     const auto& zones = mMap.getSpawnZones();
     if (zones.empty()) return false;
 
     const int MAX_TRIES = 20;
     for (int attempt = 0; attempt < MAX_TRIES; ++attempt)
     {
-        // 1) случайная зона
+        // random zone
         const auto& sz = zones[std::rand() % zones.size()];
 
         if (sz.incidentType == "car") {
-            // 2) Выбираем текстуру машины
+            // choosing car texture
             auto& dict = (sz.orientation == "front")
                 ? mCarFrontTextures
                 : mCarSideTextures;
             std::string colorKey = pickColor(sz.color, dict);
             const sf::Texture& carTex = dict.at(colorKey);
 
-            // 3) Создаем временный спрайт, чтобы узнать его размер
+            // create temporary sprite, to find out its size
             sf::Sprite tempCar(carTex);
-            float scale = 1.5f;  // или тот же const 1.5f
+            float scale = 1.5f;
             tempCar.setScale(scale, scale);
             tempCar.setPosition(0.f, 0.f);
-            // Получаем размеры с учётом масштаба
+            // Gettins size taking into account the scale
             sf::FloatRect carBounds = tempCar.getGlobalBounds();
             float spriteW = carBounds.width;
             float spriteH = carBounds.height;
 
-            // 4) Вычисляем допустимый диапазон точек спавна
+            // Calculate spawn range
             float minX = sz.rect.left;
             float minY = sz.rect.top;
             float maxX = sz.rect.left + sz.rect.width - spriteW;
             float maxY = sz.rect.top + sz.rect.height - spriteH;
             if (maxX < minX || maxY < minY)
-                continue;  // зона слишком мала — пропускаем
+                continue;  // zone too small
 
-            // 5) Случайная точка в этом диапазоне
+            // 5) Random dot in range
             float rx = minX + (std::rand() / float(RAND_MAX)) * (maxX - minX);
             float ry = minY + (std::rand() / float(RAND_MAX)) * (maxY - minY);
 
-            // 6) Проверяем пересечение с уже существующими машинами
+            // 6) Checking crossing with exist cars
             tempCar.setPosition(rx, ry);
             auto newBounds = tempCar.getGlobalBounds();
 
@@ -360,7 +354,7 @@ bool GameLogic::spawnOne()
             }
             if (overlap) continue;
 
-            // параметры вопросика-спрайтшита:
+            // settings for sign spritesheet
             unsigned        frameCount = 15;
             sf::Vector2u    frameSize{ 6,23 };
             float           frameDuration = 0.1f;
@@ -377,13 +371,12 @@ bool GameLogic::spawnOne()
 
         }
         else if (sz.incidentType == "fight") {
-            // 1. Временный спрайт, чтобы узнать размеры
-            unsigned frameCount = 6; // число кадров
-            sf::Vector2u frameSize{ 23, 15 }; // реальный размер кадра
+            unsigned frameCount = 6;
+            sf::Vector2u frameSize{ 23, 15 };
             float scale = 1.5f;
 
             sf::Sprite tempFight(mFightSheetTexture);
-            tempFight.setTextureRect(sf::IntRect(0, 0, frameSize.x, frameSize.y)); // ВАЖНО!
+            tempFight.setTextureRect(sf::IntRect(0, 0, frameSize.x, frameSize.y));
             tempFight.setScale(scale, scale);
             tempFight.setPosition(0.f, 0.f);
 
@@ -391,7 +384,6 @@ bool GameLogic::spawnOne()
             float spriteW = fightBounds.width;
             float spriteH = fightBounds.height;
 
-            // 2. Диапазон спавна
             float minX = sz.rect.left;
             float minY = sz.rect.top;
             float maxX = sz.rect.left + sz.rect.width - spriteW;
@@ -430,19 +422,16 @@ bool GameLogic::spawnOne()
             return true;
         }
         else if (sz.incidentType == "graffiti") {
-            // 1. Выбираем нужный спрайтшит по orientation
-            const sf::Texture* graffitiTex = &mGraffitiRightTexture; // дефолт — вправо
+            // Choosing needed spritesheet at orientation
+            const sf::Texture* graffitiTex = &mGraffitiRightTexture; // right - default
             if (sz.orientation == "left") {
                 graffitiTex = &mGraffitiLeftTexture;
             }
 
-            // 2. Параметры анимации для граффити
-            unsigned frameCount = 18; // или другое реальное количество кадров
-            sf::Vector2u frameSize{ 20, 16 }; // реальные размеры кадра
+            unsigned frameCount = 18;
+            sf::Vector2u frameSize{ 20, 16 };
             float frameDuration = 0.1f;
             float scale = 1.5f;
-
-            // 3. Подсчёт спавна и overlap — аналогично FightIncident
 
             sf::Sprite tempGraffiti(*graffitiTex);
             tempGraffiti.setTextureRect(sf::IntRect(0, 0, frameSize.x, frameSize.y));
@@ -453,26 +442,8 @@ bool GameLogic::spawnOne()
             float spriteW = graffitiBounds.width;
             float spriteH = graffitiBounds.height;
 
-
-            /*float minX = sz.rect.left;
-            float minY = sz.rect.top;
-            float maxX = sz.rect.left + sz.rect.width - spriteW;
-            float maxY = sz.rect.top + sz.rect.height - spriteH;
-
-            std::cout << "[SPAWN] minX=" << minX << " maxX=" << maxX << " minY=" << minY << " maxY=" << maxY << std::endl;
-
-            if (maxX < minX || maxY < minY)
-                continue;*/
-
             float rx = sz.rect.left + sz.rect.width / 2.f - spriteW / 2.f;
             float ry = sz.rect.top + sz.rect.height / 2.f - spriteH / 2.f;
-
-
-            /*float rx = minX + (std::rand() / float(RAND_MAX)) * (maxX - minX);
-            float ry = minY + (std::rand() / float(RAND_MAX)) * (maxY - minY);*/
-
-
-
 
             tempGraffiti.setPosition(rx, ry);
             auto newBounds = tempGraffiti.getGlobalBounds();
@@ -487,11 +458,9 @@ bool GameLogic::spawnOne()
             }
             if (overlap) continue;
 
-        
-            // 4. Создать GraffitiIncident
             mIncidents.emplace_back(std::make_unique<GraffitiIncident>(
                 sf::Vector2f(rx, ry),
-                *graffitiTex,              // <-- ВАЖНО: сюда передаёшь нужную текстуру
+                *graffitiTex,
                 mQuestionSheetTexture,
                 frameCount,
                 frameSize,
@@ -524,7 +493,7 @@ std::string GameLogic::pickColor(const std::string& desired, const std::unordere
 
 
 void GameLogic::startQTE(bool resetAttempt) {
-    // Сброс QTE состояния
+    // Reset QTE status
     mQTE.sequence.clear();
     mQTE.currentIndex = 0;
     if (resetAttempt) mQTE.attempt = 0;

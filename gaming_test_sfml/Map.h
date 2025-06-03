@@ -6,10 +6,8 @@
 
 class Map : public sf::Drawable, public sf::Transformable {
 public:
-    // загружает JSON и строит два слоя (base + obstacles)
     bool loadFromJSON(const std::string& jsonPath);
 
-    // проверка, можно ли ходить по тайлу (tx,ty)
     bool isWalkable(int tx, int ty) const;
 
     sf::Vector2u getTileSize() const { return mTileSize; }
@@ -18,26 +16,26 @@ public:
 
 private:
     struct Tileset {
-        int               firstGid;
-        sf::Texture       texture;
-        int               tileWidth;
-        int               tileHeight;
-        int               columns;     // сколько тайлов помещается по X
+        int firstGid;
+        sf::Texture texture;
+        int tileWidth;
+        int tileHeight;
+        int columns;
     };
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-    sf::Vector2u                 mTileSize;
-    sf::Vector2u                 mMapSize;
-    std::vector<Tileset>         mTilesets;
-    std::vector<sf::VertexArray> mBaseLayers;      // по одному VA на каждый tileset
-    std::vector<sf::VertexArray> mObstacleLayers;  // по одному VA на каждый tileset
-    std::vector<int>             mCollisionMask;   // 1=стена, 0=свободно
+    sf::Vector2u mTileSize;
+    sf::Vector2u mMapSize;
+    std::vector<Tileset> mTilesets;
+    std::vector<sf::VertexArray> mBaseLayers;
+    std::vector<sf::VertexArray> mObstacleLayers;
+    std::vector<int> mCollisionMask;
 
     struct SpawnZone {
-        sf::FloatRect rect;       // { x, y, width, height }
-        std::string   orientation; // "side" или "front"
-        std::string   color;       // "red", "blue" и т.п.
+        sf::FloatRect rect;// { x, y, width, height }
+        std::string orientation; // "side" or "front"
+        std::string color;
         std::string incidentType = "car";
     };
     std::vector<SpawnZone> mSpawnZones;

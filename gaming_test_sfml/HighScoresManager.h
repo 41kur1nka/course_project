@@ -7,19 +7,18 @@ class HighScoresManager {
 public:
     HighScoresManager(const std::string& filename = "scores.txt");
 
-    // Загрузить/сохранить из файла
+    // Download/save in file
     void load();
     void save();
 
-    // Добавить новый рекорд
+    // Add new record
     void addScore(const std::string& name, int score);
 
-    // Получить топ-N
+    // Get top-N
     std::vector<std::pair<std::string, int>> getTop(int n = 10) const;
 
     const std::vector<std::pair<std::string, int>>& getAll() const { return mScores; }
 
-    // работа с онлайн таблицой
     void sendScoreOnline(const std::string& name, int score);
 
     std::vector<std::pair<std::string, int>> getScoresOnline();

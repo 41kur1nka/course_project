@@ -8,11 +8,11 @@ GameRenderer::GameRenderer(sf::RenderWindow& window, GameLogic& logic)
     , mLogic(logic)
 {
 
-    // Загружаем шрифт для HUD
+    // Loading font for HUD
     if (!mFont.loadFromFile("assets/fonts/Montserrat-Black.ttf"))
         throw std::runtime_error("Failed to load font for HUD");
 
-    // Настраиваем три текстовых поля
+    // Setting text box
     auto initText = [&](sf::Text& t, unsigned size) {
         t.setFont(mFont);
         t.setCharacterSize(size);
@@ -24,8 +24,6 @@ GameRenderer::GameRenderer(sf::RenderWindow& window, GameLogic& logic)
     initText(mQTEText, 20);
 
 
-    // === Interaction Screen setup ===
-    // Прозрачный полупрозрачный фон на весь экран
     mInteractionOverlay.setSize(
         sf::Vector2f((float)window.getSize().x, (float)window.getSize().y));
     mInteractionOverlay.setFillColor(sf::Color(0, 0, 0, 180));
@@ -39,24 +37,20 @@ GameRenderer::GameRenderer(sf::RenderWindow& window, GameLogic& logic)
 
 void GameRenderer::render()
 {
-    // 1) Отрисовка сцены
-    // Карта
     mWindow.draw(mLogic.getMap());
 
-    // Инциденты
     for (auto& inc : mLogic.getIncidents())
         inc->render(mWindow);
 
-    // Игрок
     mLogic.getPlayer().render(mWindow);
 
-    // 2) Отрисовка HUD
-    // 2.1 Счёт
+    // Drawign HUD
+    // Scores
     mScoreText.setString("Score: " + std::to_string(mLogic.getScore()));
     mScoreText.setPosition(10.f, 10.f);
     mWindow.draw(mScoreText);
 
-    // 2.2 Время (mm:ss)
+    // Time
     {
         int total = static_cast<int>(mLogic.getElapsedSeconds());
         int mm = total / 60;
@@ -71,7 +65,7 @@ void GameRenderer::render()
     mTimeText.setPosition(10.f, 40.f);
     mWindow.draw(mTimeText);
 
-    // 2.3 Активные инциденты
+    // Active incidents
     mActiveText.setString("Active: " + std::to_string(mLogic.getActiveIncidents()));
     mActiveText.setPosition(10.f, 70.f);
     mWindow.draw(mActiveText);
@@ -244,7 +238,6 @@ void GameRenderer::render()
                 auto seq = mLogic.getQTESequence();
                 size_t index = mLogic.getQTECurrentIndex();
 
-                //  ,   ������ �������� [ ]
                 std::string display;
                 for (size_t i = 0; i < seq.size(); ++i) {
                     char ch = '?';
@@ -262,11 +255,10 @@ void GameRenderer::render()
                         display += std::string(" ") + ch + "  ";
                 }
 
-                //  
                 display += "\nAttempt: " + std::to_string(mLogic.getQTEAttempt() + 1) + " / 3";
 
                 mQTEText.setString(display);
-                //   
+
                 auto gb = mQTEText.getGlobalBounds();
                 mQTEText.setPosition(
                     mWindow.getSize().x / 2.f - gb.width / 2.f,

@@ -10,16 +10,12 @@ class Game; // Forward declaration
 
 class MainMenuScreen {
 public:
-	// stateRef � ������ �� ���������� � Game, ����� ������ � ��� ������
 	explicit MainMenuScreen(GameState& stateRef, Game& gameRef);
 
-	// ��������� ��� ������ (�������� ������ � ���)
 	void loadAssets(const sf::RenderWindow& window);
 
-	// �������� (��������� ������)
 	void update(const sf::RenderWindow& window);
 
-	// ����������
 	void draw(sf::RenderTarget& target);
 
 private:

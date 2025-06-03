@@ -12,7 +12,7 @@ private:
     sf::RenderWindow& mWindow;
     GameLogic& mLogic;
 
-    // Äëÿ HUD
+    // HUD
     sf::Font                mFont;
     sf::Text                mScoreText;
     sf::Text                mTimeText;

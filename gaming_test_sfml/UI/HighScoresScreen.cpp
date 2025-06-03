@@ -46,7 +46,7 @@ void HighScoresScreen::loadScoresOnline()
 {
     auto onlineScores = mScores.getScoresOnline();
     if (!onlineScores.empty()) {
-        // ‘ильтраци€ Ч только лучший результат на им€
+        // Filtering Ч only the best results by name
         std::map<std::string, int> uniqueScores;
         for (const auto& p : onlineScores) {
             if (uniqueScores.count(p.first)) {

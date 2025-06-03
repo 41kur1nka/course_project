@@ -6,26 +6,19 @@
 
 class Button {
 public:
-    // texNormal, texHover, texPressed - текстуры кнопки
-    // position - позиция-левый верх кнопки
-    // onClick    - выполняется при нажатии на кнопку
     Button(const sf::Texture& texNormal,
         const sf::Texture& texHover,
         const sf::Texture& texPressed,
         const sf::Vector2f& position,
         std::function<void()> onClick);
 
- /*   ~Button() {
-        mOnClick = nullptr;
-    }*/
-
-    // Проверка состояния (hover, pressed) и вызов onClick, если надо
+    // Checking status (hover, pressed) and onClick 
     void update(const sf::RenderWindow& window);
 
-    // Отрисовка кнопки
+    // Draw button
     void draw(sf::RenderTarget& target) const;
 
-    // Установка текста кнопки
+    // Setting text for button
     void setText(const std::string& text, const sf::Font& font, unsigned int characterSize = 20);
 
 private:
@@ -38,7 +31,7 @@ private:
     std::function<void()>  mOnClick;
     bool                   mWasPressed = false;
 
-    // Текст кнопки
+    // Button text
     sf::Text              mText;
     void                  updateTextPosition();
 };

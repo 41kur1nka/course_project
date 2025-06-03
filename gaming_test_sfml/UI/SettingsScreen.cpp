@@ -9,7 +9,7 @@ SettingsScreen::SettingsScreen(GameState& stateRef, PlayerSettings& settings)
 void SettingsScreen::loadSkinTextures() {
     mSkinTextures.resize(mSkinNames.size());
     
-    // Загрузка текстур для каждого скина
+    // Loading textures for every skin
     std::vector<std::string> skinPaths = {
         "assets/skins/player_classic.png",
         "assets/skins/player_blue.png",
@@ -28,7 +28,6 @@ void SettingsScreen::loadSkinTextures() {
 void SettingsScreen::loadAssets(const sf::RenderWindow& window) {
     mFont.loadFromFile("assets/fonts/Montserrat-Black.ttf");
 
-     // Загрузка текстур скинов
     loadSkinTextures();
 
     std::cout << "[DEBUG] mSkinTextures.size() = " << mSkinTextures.size() << std::endl;
@@ -38,7 +37,7 @@ void SettingsScreen::loadAssets(const sf::RenderWindow& window) {
         mSettings.skinIndex = 0;
     }
 
-    // Загрузка текстур кнопок "Сохранить" и "Назад"
+    // Loading texture buttons "Save" and "Back to menu"
     if (!mTexN.loadFromFile("assets/ui/btn_gamemenu_norm.png") ||
         !mTexH.loadFromFile("assets/ui/btn_gamemenu_hover.png") ||
         !mTexP.loadFromFile("assets/ui/btn_gamemenu_down.png"))
@@ -53,7 +52,7 @@ void SettingsScreen::loadAssets(const sf::RenderWindow& window) {
         throw std::runtime_error("Can't load save/back button textures (norm/hover/down)");
     }
 
-    // Кнопка "<" (влево в скине)
+    // Button "<"
     if (!mTexPrev.loadFromFile("assets/ui/btn_prev_norm.png") ||
         !mTexPrevH.loadFromFile("assets/ui/btn_prev_hover.png") ||
         !mTexPrevP.loadFromFile("assets/ui/btn_prev_down.png"))
@@ -61,7 +60,7 @@ void SettingsScreen::loadAssets(const sf::RenderWindow& window) {
         throw std::runtime_error("Can't load previous skin button textures");
     }
 
-    // Кнопка ">" (вправо в скине)
+    // Button ">"
     if (!mTexNext.loadFromFile("assets/ui/btn_next_norm.png") ||
         !mTexNextH.loadFromFile("assets/ui/btn_next_hover.png") ||
         !mTexNextP.loadFromFile("assets/ui/btn_next_down.png"))
@@ -69,7 +68,7 @@ void SettingsScreen::loadAssets(const sf::RenderWindow& window) {
         throw std::runtime_error("Can't load next skin button textures");
     }
 
-    // Настройка текстовых элементов
+    // Setting text elements
     mNameLabel.setFont(mFont);
     mNameLabel.setString("Your Name:");
     mNameLabel.setCharacterSize(28);
@@ -87,25 +86,23 @@ void SettingsScreen::loadAssets(const sf::RenderWindow& window) {
     mEditLabel.setFillColor(sf::Color::White);
     mEditingName = mSettings.name;
 
-    // Скины
+    // Skins
     mSkinLabel.setFont(mFont);
     mSkinLabel.setPosition(120, 220);
     mSkinLabel.setCharacterSize(28);
     mSkinLabel.setFillColor(sf::Color::White);
 
-    // Создание и настройка кнопок
     float buttonWidth = 200.f;
     float buttonHeight = 50.f;
     float buttonSpacing = 20.f;
 
-    // Кнопки "Назад" и "Сохранить"
     mSaveBtn = std::make_unique<Button>(
         mTeN, mTeH, mTeP,
         sf::Vector2f(window.getSize().x / 2.f - buttonWidth - buttonSpacing/2, 400),
         [this]() {
             try {
                 mSettings.name = mEditingName;
-                mSettings.saveLocal(); // Сначала сохраняем локально
+                mSettings.saveLocal();
                 mSettings.saveOnline(PlayerSettings::API_KEY, PlayerSettings::BIN_ID,
                     [this](bool success) {
                         if (!success) {
@@ -126,7 +123,7 @@ void SettingsScreen::loadAssets(const sf::RenderWindow& window) {
         [this]() { mState = GameState::MainMenu; }
     );
 
-    // Кнопки переключения скина
+    // Select button for skins
     float skinButtonY = 220;
     mPrevSkinBtn = std::make_unique<Button>(
         mTexPrev, mTexPrevH, mTexPrevP,
@@ -171,19 +168,19 @@ void SettingsScreen::update(const sf::RenderWindow& window, const sf::Event& eve
         }
     }
 
-    // Обновление кнопок
+    // Updating buttons
     if (mSaveBtn) mSaveBtn->update(window);
     if (mBackBtn) mBackBtn->update(window);
     if (mPrevSkinBtn) mPrevSkinBtn->update(window);
     if (mNextSkinBtn) mNextSkinBtn->update(window);
 }
 void SettingsScreen::draw(sf::RenderTarget& target) {
-    // Отрисовка фона
+    // Draw background
     sf::RectangleShape background(sf::Vector2f(target.getSize()));
     background.setFillColor(sf::Color(20, 20, 40, 255));
     target.draw(background);
 
-    // Отрисовка элементов интерфейса
+    // Draw interface elements
     target.draw(mNameLabel);
     target.draw(mNameBox);
     
@@ -200,14 +197,12 @@ void SettingsScreen::draw(sf::RenderTarget& target) {
     mSkinLabel.setString("Skin: " + mSkinNames[mSettings.skinIndex]);
     target.draw(mSkinLabel);
 
-    // Отрисовка превью текущего скина
     sf::Sprite skinPreview(mSkinTextures[mSettings.skinIndex]);
     float previewSize = 100.f;
     float scale = previewSize / std::max(skinPreview.getTexture()->getSize().x, 
                                        skinPreview.getTexture()->getSize().y);
     skinPreview.setScale(scale, scale);
     
-    // Центрирование превью
     sf::Vector2f previewPos(400, 220);
     sf::Vector2f textureSize(skinPreview.getTexture()->getSize());
     skinPreview.setPosition(
@@ -215,7 +210,6 @@ void SettingsScreen::draw(sf::RenderTarget& target) {
         previewPos.y + (previewSize - textureSize.y * scale) / 2.f
     );
     
-    // Добавление рамки для превью
     sf::RectangleShape previewBorder(sf::Vector2f(previewSize, previewSize));
     previewBorder.setPosition(previewPos);
     previewBorder.setFillColor(sf::Color::Transparent);
@@ -225,7 +219,6 @@ void SettingsScreen::draw(sf::RenderTarget& target) {
     target.draw(previewBorder);
     target.draw(skinPreview);
 
-    // Отрисовка кнопок
     if (mPrevSkinBtn) mPrevSkinBtn->draw(target);
     if (mNextSkinBtn) mNextSkinBtn->draw(target);
     if (mSaveBtn) mSaveBtn->draw(target);

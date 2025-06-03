@@ -16,7 +16,7 @@ bool Map::loadFromJSON(const std::string& jsonPath)
 {
     std::filesystem::path baseDir = std::filesystem::path(jsonPath).parent_path();
 
-    // 1) Загрузка JSON
+    // Loading JSON
     std::ifstream in(jsonPath);
     if (!in.is_open())
         throw std::runtime_error("Failed to open " + jsonPath);
@@ -25,7 +25,7 @@ bool Map::loadFromJSON(const std::string& jsonPath)
 
 
 
-    // 2) Читаем размеры
+    // Reading size
     unsigned W = j.at("width").get<unsigned>();
     unsigned H = j.at("height").get<unsigned>();
     unsigned tileW = j.at("tilewidth").get<unsigned>();
@@ -33,7 +33,7 @@ bool Map::loadFromJSON(const std::string& jsonPath)
     mMapSize = { W, H };
     mTileSize = { tileW, tileH };
 
-    // 3) Загружаем ВСЕ встроенные tilesets
+    // Loading tilesets
     for (auto& ts : j.at("tilesets")) {
         if (!ts.contains("image"))
             throw std::runtime_error("External .tsx not supported: embed tilesets in JSON");
@@ -50,7 +50,7 @@ bool Map::loadFromJSON(const std::string& jsonPath)
         mTilesets.push_back(std::move(t));
     }
 
-    // 4) Подготовка vertex arrays и mask
+    // Preparing vertex arrays and mask
     size_t nTs = mTilesets.size();
     mBaseLayers.resize(nTs);
     mObstacleLayers.resize(nTs);
@@ -60,7 +60,7 @@ bool Map::loadFromJSON(const std::string& jsonPath)
     }
     mCollisionMask.assign(W * H, 0);
 
-    // 5) Читаем два слоя из JSON (base + obstacles)
+    // Reading 2 layers from JSON (base + obstacles)
     std::vector<int> rawBase, rawObs;
     int layerCount = 0;
     for (auto& layer : j.at("layers")) {
@@ -73,7 +73,7 @@ bool Map::loadFromJSON(const std::string& jsonPath)
     if (rawBase.size() != W * H || rawObs.size() != W * H)
         throw std::runtime_error("Layer size mismatch");
 
-    // 6) Построение вершин
+    // Building vertices
     for (unsigned y = 0; y < H; ++y) {
         for (unsigned x = 0; x < W; ++x) {
             unsigned idx = x + y * W;
@@ -81,7 +81,7 @@ bool Map::loadFromJSON(const std::string& jsonPath)
             for (int layerId = 0; layerId < 2; ++layerId) {
                 unsigned gid = gids[layerId] & ~FLIPPED_MASK;
                 if (gid == 0) continue;
-                // Найти tileset: последний with firstGid <= gid
+                // Find tileset: last with firstGid <= gid
                 const Tileset* ts = nullptr;
                 for (auto it = mTilesets.rbegin(); it != mTilesets.rend(); ++it) {
                     if (gid >= it->firstGid) { ts = &*it; break; }
@@ -100,7 +100,7 @@ bool Map::loadFromJSON(const std::string& jsonPath)
                 quad[2].position = { px + tileW, py + tileH };
                 quad[3].position = { px,      py + tileH };
                 sf::Vector2f uv[4] = { {tx,ty},{tx + tileW,ty},{tx + tileW,ty + tileH},{tx,ty + tileH} };
-                // flips (опционально, если нужны)
+                // flips
                 if (gids[layerId] & FLIPPED_H) { std::swap(uv[0], uv[1]); std::swap(uv[2], uv[3]); }
                 if (gids[layerId] & FLIPPED_V) { std::swap(uv[0], uv[3]); std::swap(uv[1], uv[2]); }
                 if (gids[layerId] & FLIPPED_D) std::swap(uv[1], uv[3]);
@@ -114,13 +114,13 @@ bool Map::loadFromJSON(const std::string& jsonPath)
     }
 
 
-    // 7) обработка spawnzones
+    // processing spawnzones
     for (auto& layer : j.at("layers")) {
         if (layer.at("type").get<std::string>() != "objectgroup")
             continue;
 
         for (auto& obj : layer.at("objects")) {
-            // только объекты с incidentType!
+            // only objects with incidentType
             std::string incidentType = "";
             std::string orientation = "";
             std::string color = "red";
@@ -134,7 +134,7 @@ bool Map::loadFromJSON(const std::string& jsonPath)
                     if (name == "color")        color = val;
                 }
             }
-            // пропускаем объекты без incidentType!
+            // skipping objects without incidentType
             if (incidentType.empty()) continue;
 
             SpawnZone sz;
@@ -150,12 +150,6 @@ bool Map::loadFromJSON(const std::string& jsonPath)
             mSpawnZones.push_back(std::move(sz));
         }
     }
-
-
-    // обработка fightzones
-
-    
-
     return true;
 }
 
@@ -168,7 +162,6 @@ bool Map::isWalkable(int tx, int ty) const
 
 void Map::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    // Рисуем каждый tileset по очереди
     for (size_t i = 0; i < mTilesets.size(); ++i) {
         states.texture = &mTilesets[i].texture;
         target.draw(mBaseLayers[i], states);

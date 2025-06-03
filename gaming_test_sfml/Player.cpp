@@ -34,33 +34,18 @@ mElapsedTime(sf::Time::Zero)
 
 	mSprite.setTexture(mRightTexture);
 
-	//Спрайтлист состоит из горизональных  кадров
 	mFrameWidth = static_cast<float>(mRightTexture.getSize().x) / mFramecount;
 	mFrameHeight = static_cast<float>(mRightTexture.getSize().y);
 
-	//Первый кадр
 	mFrameRect = sf::IntRect(0, 0, static_cast<int>(mFrameWidth), static_cast<int>(mFrameHeight));
 	mSprite.setTextureRect(mFrameRect);
 
-	//Стартовая позиция
 	mSprite.setPosition(400.f, 300.f);
 }
 
 void Player::update(Time deltaTime)
 {
 	updateDirection();
-
-	/*Vector2f movement(0.f, 0.f);
-	if (mIsMovingUp)
-		movement.y -= mSpeed;
-	if (mIsMovingDown)
-		movement.y += mSpeed;
-	if (mIsMovingLeft)
-		movement.x -= mSpeed;
-	if (mIsMovingRight)
-		movement.x += mSpeed;
-
-	mSprite.move(movement * deltaTime.asSeconds());*/
 
 	if (mIsMovingUp || mIsMovingDown || mIsMovingLeft || mIsMovingRight) {
 		updateAnimation(deltaTime);
@@ -121,8 +106,7 @@ void Player::setSkin(int skinIndex)
 		skinIndex = 0;
 	}
 	
-	mSkinIndex = skinIndex; // Запоминаем выбранный скин
-	// Теперь выберем нужный спрайт
+	mSkinIndex = skinIndex;
 	switch (mSkinIndex) {
 	case 0:
 		mRightTextureToUse = &mRightTexture;

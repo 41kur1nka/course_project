@@ -20,7 +20,7 @@ void Button::update(const sf::RenderWindow& window)
     sf::Vector2i mouse = sf::Mouse::getPosition(window);
     bool contains = mSprite.getGlobalBounds().contains((sf::Vector2f)mouse);
 
-    // Проверка состояния
+    // Checking status
     if (contains) {
         if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
             mState = State::Pressed;
@@ -44,7 +44,7 @@ void Button::update(const sf::RenderWindow& window)
         mWasPressed = false;
     }
 
-    // Установка текстуры по состоянию
+    // Setting texture by status
     switch (mState) {
     case State::Normal: mSprite.setTexture(mTexN); break;
     case State::Hover:  mSprite.setTexture(mTexH); break;
@@ -69,7 +69,7 @@ void Button::setText(const std::string& text, const sf::Font& font, unsigned int
 }
 
 void Button::updateTextPosition() {
-    // Центрирование текста на кнопке
+
     sf::FloatRect textBounds = mText.getLocalBounds();
     sf::FloatRect spriteBounds = mSprite.getGlobalBounds();
     

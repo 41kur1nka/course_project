@@ -23,9 +23,9 @@ private:
     GameState& mState;
     HighScoresManager& mScoresManager;
     GameLogic& mLogic;
-    sf::Texture                 mResumeNorm, mResumeHover, mResumeDown;
-    sf::Texture                 mExitNorm, mExitHover, mExitDown;
-    std::vector<Button>         mButtons;
+    sf::Texture mResumeNorm, mResumeHover, mResumeDown;
+    sf::Texture mExitNorm, mExitHover, mExitDown;
+    std::vector<Button> mButtons;
 
     
 };

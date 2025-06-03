@@ -7,7 +7,7 @@
 #include <iostream>
 
 Game::Game()
-    : mLogic(std::make_unique<GameLogic>())  // ���������� GameLogic::GameLogic(), �� ��� ��������� map.json
+    : mLogic(std::make_unique<GameLogic>())
     , mWindow(
         sf::VideoMode(
             mLogic->getMapSize().x* mLogic->getTileSize().x,
@@ -25,7 +25,6 @@ Game::Game()
     , mSettingsScreen(mState, mSettings)
 
 {
-    // ����� ����� ��� ��������� ������ ����, ���������������� ������ � �.�.
     mMainMenu.loadAssets(mWindow);
     mPauseScreen->loadAssets(mWindow);
     mScoresScreen.loadAssets(mWindow);
@@ -99,8 +98,6 @@ void Game::processInput()
 
         
         case GameState::HighScores:
-            /*if (e.type == sf::Event::MouseButtonReleased && e.mouseButton.button == sf::Mouse::Left)
-                mScoresScreen.update(mWindow);*/
             break;
 
         case GameState::Settings:
